@@ -310,7 +310,7 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
       gap: 10px;
     }
 
@@ -592,6 +592,153 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .health-status-panel {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .health-status-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+    }
+
+    .health-status-title {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.16;
+      font-weight: 920;
+    }
+
+    .health-status-text {
+      margin: 10px 0 0;
+      color: var(--text-soft);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .health-action-row,
+    .health-form-grid,
+    .health-log-grid,
+    .sync-form-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .health-action-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .health-form-grid,
+    .health-log-grid,
+    .sync-form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .health-form-grid .full-row,
+    .health-log-grid .full-row,
+    .sync-form-grid .full-row {
+      grid-column: 1 / -1;
+    }
+
+    .health-field {
+      min-width: 0;
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 760;
+    }
+
+    .health-field .input,
+    .health-field .select,
+    .sync-form-grid .input {
+      height: 42px;
+    }
+
+    .health-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .health-metric {
+      min-height: 62px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--field);
+    }
+
+    .health-metric-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 760;
+    }
+
+    .health-metric-value {
+      margin: 7px 0 0;
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .symptom-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .symptom-chip {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-soft);
+      background: var(--field);
+      font-size: 0.8rem;
+      font-weight: 820;
+      cursor: pointer;
+    }
+
+    .symptom-chip.is-active {
+      color: #fff;
+      border-color: transparent;
+      background: var(--warm-deep);
+    }
+
+    .period-history-item {
+      padding: 15px 18px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .period-history-actions {
+      display: flex;
+      gap: 2px;
+    }
+
+    .health-disclaimer {
+      margin: 0;
+      padding: 12px 14px;
+      border: 1px solid rgba(232, 93, 42, 0.24);
+      border-radius: 8px;
+      color: var(--text-soft);
+      background: rgba(255, 122, 69, 0.1);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      font-weight: 720;
     }
 
     .form-row {
@@ -1259,6 +1406,40 @@
       font-weight: 750;
     }
 
+    .sync-form {
+      padding: 0 18px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .sync-status-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+    }
+
+    .sync-status-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 860;
+    }
+
+    .sync-status-note {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      font-weight: 680;
+    }
+
+    .sync-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .desk-pet {
       width: var(--pet-size);
       height: var(--pet-size);
@@ -1468,6 +1649,13 @@
         flex-direction: column;
       }
 
+      .health-action-row,
+      .health-form-grid,
+      .health-log-grid,
+      .sync-form-grid {
+        grid-template-columns: 1fr;
+      }
+
       .primary-btn {
         width: 100%;
       }
@@ -1525,6 +1713,10 @@
             <p class="stat-label">今日支出</p>
             <p class="stat-value small" id="homeTodaySpend">¥0</p>
           </div>
+          <div class="stat-card">
+            <p class="stat-label">健康</p>
+            <p class="stat-value small" id="homeHealthStatus">未记录</p>
+          </div>
         </div>
 
         <section class="focus-panel panel" aria-labelledby="homeFocusTitle">
@@ -1536,7 +1728,7 @@
             <button class="ghost-btn" id="homeFocusButton" type="button" data-go="todo">去处理</button>
           </div>
           <p class="focus-text" id="homeFocusText">今天还没形成压力，很适合轻轻启动。</p>
-          <p class="focus-meta" id="homeFocusMeta">噜噜 Life 会根据待办、预算和账单更新建议。</p>
+          <p class="focus-meta" id="homeFocusMeta">噜噜 Life 会根据待办、健康和账单更新建议。</p>
           <div class="signal-list" id="homeSignals"></div>
         </section>
 
@@ -1568,6 +1760,20 @@
             <span>
               <span class="quick-title">记一笔</span>
               <span class="quick-note">看清钱去哪儿玩了。</span>
+            </span>
+          </button>
+
+          <button class="quick-tile" type="button" data-go="health">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M20 11.5c0 5-5.2 8-8 9.5-2.8-1.5-8-4.5-8-9.5A4.7 4.7 0 0 1 12 8a4.7 4.7 0 0 1 8 3.5Z" />
+                <path d="M12 8V4" />
+                <path d="M9.5 4h5" />
+              </svg>
+            </span>
+            <span>
+              <span class="quick-title">姨妈记录</span>
+              <span class="quick-note">记录周期、状态和小提醒。</span>
             </span>
           </button>
 
@@ -1831,6 +2037,135 @@
         </section>
       </section>
 
+      <section class="main-view" id="healthView" data-view="health" aria-labelledby="healthTitle">
+        <div class="hero-panel panel">
+          <p class="eyebrow">健康</p>
+          <h2 class="page-title" id="healthTitle">把身体的小信号记下来</h2>
+          <p class="page-copy">姨妈记录、状态打卡和周期预测都在这里。噜噜负责提醒，不负责装医生。</p>
+        </div>
+
+        <section class="health-status-panel panel" aria-labelledby="periodStatusTitle">
+          <div class="health-status-card">
+            <p class="eyebrow" style="margin-bottom: 8px;">姨妈记录</p>
+            <h3 class="health-status-title" id="periodStatusTitle">还没有记录</h3>
+            <p class="health-status-text" id="periodStatusText">先记录一次开始日期，噜噜就能帮你估算下次时间。</p>
+            <div class="health-metric-grid" aria-label="周期摘要">
+              <div class="health-metric">
+                <p class="health-metric-label">预计下次</p>
+                <p class="health-metric-value" id="periodNextText">--</p>
+              </div>
+              <div class="health-metric">
+                <p class="health-metric-label">平均周期</p>
+                <p class="health-metric-value" id="periodCycleText">28 天</p>
+              </div>
+              <div class="health-metric">
+                <p class="health-metric-label">易孕期</p>
+                <p class="health-metric-value" id="periodFertileText">--</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="health-action-row">
+            <button class="primary-btn" id="periodStartTodayButton" type="button">今天来了</button>
+            <button class="ghost-btn" id="periodEndTodayButton" type="button">今天结束</button>
+          </div>
+
+          <form class="health-form-grid" id="periodForm">
+            <label class="health-field" for="periodStartInput">
+              <span>开始日期</span>
+              <input class="input" id="periodStartInput" type="date" />
+            </label>
+            <label class="health-field" for="periodEndInput">
+              <span>结束日期</span>
+              <input class="input" id="periodEndInput" type="date" />
+            </label>
+            <div class="sync-actions full-row">
+              <button class="ghost-btn" id="periodCancelEditButton" type="button" hidden>取消编辑</button>
+              <button class="primary-btn" id="periodSaveButton" type="submit">保存周期</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="form-panel panel" aria-labelledby="periodLogTitle">
+          <div class="section-head" style="padding: 0 0 16px;">
+            <div>
+              <h3 class="section-title" id="periodLogTitle">当天状态</h3>
+              <p class="section-note">经期内可以记流量、疼痛、心情和备注。</p>
+            </div>
+          </div>
+          <form class="health-log-grid" id="periodLogForm">
+            <label class="health-field" for="periodLogDateInput">
+              <span>记录日期</span>
+              <input class="input" id="periodLogDateInput" type="date" />
+            </label>
+            <label class="health-field" for="periodFlowInput">
+              <span>流量</span>
+              <select class="select" id="periodFlowInput">
+                <option value="">未记录</option>
+                <option value="spotting">点滴</option>
+                <option value="light">少量</option>
+                <option value="medium">正常</option>
+                <option value="heavy">偏多</option>
+              </select>
+            </label>
+            <label class="health-field" for="periodPainInput">
+              <span>疼痛</span>
+              <select class="select" id="periodPainInput">
+                <option value="">未记录</option>
+                <option value="none">不痛</option>
+                <option value="mild">轻微</option>
+                <option value="medium">明显</option>
+                <option value="strong">很痛</option>
+              </select>
+            </label>
+            <label class="health-field" for="periodMoodInput">
+              <span>心情</span>
+              <select class="select" id="periodMoodInput">
+                <option value="">未记录</option>
+                <option value="calm">平静</option>
+                <option value="happy">开心</option>
+                <option value="tired">疲惫</option>
+                <option value="irritable">烦躁</option>
+                <option value="sad">委屈</option>
+                <option value="anxious">焦虑</option>
+              </select>
+            </label>
+            <div class="health-field full-row">
+              <span>症状</span>
+              <div class="symptom-chip-list" id="periodSymptomChips" aria-label="症状选择"></div>
+            </div>
+            <label class="health-field full-row" for="periodNoteInput">
+              <span>备注</span>
+              <textarea class="textarea" id="periodNoteInput" maxlength="160" placeholder="比如：今天有点累，想喝热的。"></textarea>
+            </label>
+            <button class="primary-btn full-row" type="submit">保存当天状态</button>
+          </form>
+        </section>
+
+        <section class="panel" aria-labelledby="periodPredictionTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="periodPredictionTitle">预测参考</h3>
+              <p class="section-note" id="periodPredictionText">记录越多，估算越贴近你们自己的节奏。</p>
+            </div>
+          </div>
+          <div class="preview-grid" id="periodPredictionGrid"></div>
+          <div style="padding: 0 18px 18px;">
+            <p class="health-disclaimer">提示：周期、排卵日和易孕期只是根据历史记录做生活参考，不能用于医疗判断、避孕或备孕决策。出现异常出血、剧烈疼痛或明显不适，应该咨询医生。</p>
+          </div>
+        </section>
+
+        <section class="list-panel panel" aria-labelledby="periodHistoryTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="periodHistoryTitle">历史记录</h3>
+              <p class="section-note" id="periodHistorySummary">还没有历史记录。</p>
+            </div>
+          </div>
+          <div class="list" id="periodHistoryList"></div>
+        </section>
+      </section>
+
       <section class="main-view" id="deciderView" data-view="decider" aria-labelledby="deciderTitle">
         <div class="hero-panel panel">
           <p class="eyebrow">决定器</p>
@@ -1959,6 +2294,40 @@
           </div>
         </section>
 
+        <section class="panel" aria-labelledby="syncTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="syncTitle">情侣同步</h3>
+              <p class="section-note">健康记录和待办可以同步到你们两台手机；记账仍只保存在各自手机里。</p>
+            </div>
+          </div>
+          <div class="sync-form">
+            <div class="sync-status-card">
+              <p class="sync-status-title" id="syncStatusTitle">本机模式</p>
+              <p class="sync-status-note" id="syncStatusText">填入 Supabase 地址、公开 anon key 和情侣同步码后，就可以开始同步。</p>
+            </div>
+            <div class="sync-form-grid">
+              <label class="health-field full-row" for="syncUrlInput">
+                <span>Supabase 项目地址</span>
+                <input class="input" id="syncUrlInput" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
+              </label>
+              <label class="health-field full-row" for="syncAnonKeyInput">
+                <span>Supabase anon key</span>
+                <input class="input" id="syncAnonKeyInput" type="password" placeholder="公开 anon key" autocomplete="off" />
+              </label>
+              <label class="health-field full-row" for="syncRoomCodeInput">
+                <span>情侣同步码</span>
+                <input class="input" id="syncRoomCodeInput" type="password" maxlength="80" placeholder="两台手机输入同一句暗号" autocomplete="off" />
+              </label>
+            </div>
+            <div class="sync-actions">
+              <button class="ghost-btn" id="syncDisconnectButton" type="button">断开</button>
+              <button class="ghost-btn" id="syncNowButton" type="button">立即同步</button>
+              <button class="primary-btn" id="syncSaveButton" type="button">保存同步</button>
+            </div>
+          </div>
+        </section>
+
         <section class="panel" aria-labelledby="dataTitle">
           <div class="section-head">
             <div>
@@ -1977,7 +2346,7 @@
             <div class="setting-row">
               <div>
                 <p class="setting-title">备份数据</p>
-                <p class="setting-note">导出或导入待办、账本、决定和设置。</p>
+                <p class="setting-note">导出或导入待办、健康、账本、决定和设置。</p>
               </div>
               <div class="setting-actions">
                 <button class="ghost-btn" id="exportDataButton" type="button">导出</button>
@@ -1995,7 +2364,7 @@
             <div class="setting-row">
               <div>
                 <p class="setting-title">清空记录</p>
-                <p class="setting-note">清空待办、账本和决定历史。</p>
+                <p class="setting-note">清空待办、健康、账本和决定历史。</p>
               </div>
               <button class="danger-btn" id="clearDataButton" type="button">清空</button>
             </div>
@@ -2045,16 +2414,13 @@
       <span class="nav-label">记账</span>
     </button>
 
-    <button class="nav-item" type="button" data-nav="decider">
+    <button class="nav-item" type="button" data-nav="health">
       <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 3v3" />
-        <path d="M12 18v3" />
-        <path d="M3 12h3" />
-        <path d="M18 12h3" />
-        <circle cx="12" cy="12" r="6" />
-        <path d="m12 12 3-3" />
+        <path d="M20 11.5c0 5-5.2 8-8 9.5-2.8-1.5-8-4.5-8-9.5A4.7 4.7 0 0 1 12 8a4.7 4.7 0 0 1 8 3.5Z" />
+        <path d="M12 8V4" />
+        <path d="M9.5 4h5" />
       </svg>
-      <span class="nav-label">决定器</span>
+      <span class="nav-label">健康</span>
     </button>
 
     <button class="nav-item" type="button" data-nav="mine">
@@ -2067,16 +2433,44 @@
   </nav>
 
   <script>
-    const APP_VERSION = "1.4.0";
-    const BACKUP_VERSION = 1;
+    const APP_VERSION = "1.5.0";
+    const BACKUP_VERSION = 2;
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
     const DRAG_THRESHOLD = 8;
+    const DAY_MS = 24 * 60 * 60 * 1000;
     const DEFAULT_LEDGER_CATEGORIES = ["吃喝", "交通", "购物", "娱乐", "居家", "学习", "健康", "人情", "工资", "副业", "其他"];
+    const PERIOD_DEFAULT_CYCLE_DAYS = 28;
+    const PERIOD_DEFAULT_LENGTH_DAYS = 5;
+    const PERIOD_SYMPTOMS = ["腰酸", "腹痛", "头痛", "胸胀", "疲惫", "想睡", "怕冷", "食欲变强", "情绪波动"];
+    const PERIOD_FLOW_LABELS = {
+      spotting: "点滴",
+      light: "少量",
+      medium: "正常",
+      heavy: "偏多"
+    };
+    const PERIOD_PAIN_LABELS = {
+      none: "不痛",
+      mild: "轻微",
+      medium: "明显",
+      strong: "很痛"
+    };
+    const PERIOD_MOOD_LABELS = {
+      calm: "平静",
+      happy: "开心",
+      tired: "疲惫",
+      irritable: "烦躁",
+      sad: "委屈",
+      anxious: "焦虑"
+    };
+    const SYNC_PAYLOAD_VERSION = 1;
+    const SYNC_TABLE_NAME = "lulu_sync";
     const STORAGE = {
       todos: "spark:todos",
       entries: "spark:ledger-entries",
       decisions: "spark:decisions",
       settings: "spark:settings",
+      periodRecords: "spark:period-records",
+      syncSettings: "spark:sync-settings",
       lastOpenedAt: "spark:last-opened-at",
       petPosition: "spark:desk-pet-position"
     };
@@ -2091,6 +2485,17 @@
       ledgerCategories: DEFAULT_LEDGER_CATEGORIES,
       petSize: 124,
       startedAt: Date.now()
+    };
+
+    const defaultSyncSettings = {
+      enabled: false,
+      supabaseUrl: "",
+      anonKey: "",
+      roomCode: "",
+      roomHash: "",
+      deviceId: "",
+      lastSyncedAt: null,
+      lastStatus: "本机模式"
     };
 
     const petImages = {
@@ -2149,6 +2554,21 @@
         "它走得很安详，别太想念。",
         "行吧，少一个敌人。"
       ],
+      period: [
+        "记下来了。今天对身体温柔一点，少逞强。",
+        "噜噜收到。热的、软的、慢一点，今天都合理。",
+        "身体发来消息了，别假装没信号。"
+      ],
+      periodDone: [
+        "这次记录收尾了。噜噜给你们盖一个温柔章。",
+        "结束日期记好了，下一次我会提前冒头。",
+        "收到，身体小档案又完整一点了。"
+      ],
+      sync: [
+        "同步好了，两台手机终于在同一个频道。",
+        "云端小仓库更新完毕，数据没迷路。",
+        "同步完成。噜噜把两边的小纸条对齐了。"
+      ],
       ledgerAdded: [
         "记下来了，钱的行踪终于有口供了。",
         "这笔我先收进案卷。",
@@ -2198,11 +2618,16 @@
       selectedLedgerMonth: getMonthKey(),
       selectedLedgerYear: new Date().getFullYear(),
       editingEntryId: null,
+      selectedPeriodDate: getISODate(),
+      editingPeriodId: null,
       decisionMode: "gentle",
       wheelRotation: 0,
       todos: [],
       entries: [],
       decisions: [],
+      periodRecords: [],
+      syncSettings: { ...defaultSyncSettings },
+      syncStatus: "本机模式",
       settings: { ...defaultSettings }
     };
 
@@ -2222,6 +2647,9 @@
     let petRestoreTimer = null;
     let autoTalkTimer = null;
     let decisionTimer = null;
+    let sharedSyncTimer = null;
+    let sharedSyncInProgress = false;
+    let sharedSyncSuppressed = false;
     let deferredInstallPrompt = null;
     let currentPetState = "idle";
 
@@ -2252,10 +2680,86 @@
         .slice(0, 24);
     }
 
+    function normalizeSyncSettings(settings = {}) {
+      const normalized = {
+        ...defaultSyncSettings,
+        ...settings,
+        enabled: Boolean(settings.enabled),
+        supabaseUrl: String(settings.supabaseUrl || "").trim().replace(/\/+$/, ""),
+        anonKey: String(settings.anonKey || "").trim(),
+        roomCode: String(settings.roomCode || ""),
+        roomHash: String(settings.roomHash || ""),
+        deviceId: String(settings.deviceId || "").trim() || createId(),
+        lastSyncedAt: Number.isFinite(Number(settings.lastSyncedAt)) ? Number(settings.lastSyncedAt) : null,
+        lastStatus: String(settings.lastStatus || defaultSyncSettings.lastStatus)
+      };
+
+      if (!normalized.supabaseUrl || !normalized.anonKey || !normalized.roomCode) {
+        normalized.enabled = false;
+      }
+
+      return normalized;
+    }
+
+    function normalizeTodoRecord(todo = {}) {
+      const createdAt = Number(todo.createdAt) || Date.now();
+      const completedAt = Number.isFinite(Number(todo.completedAt)) ? Number(todo.completedAt) : null;
+      const deletedAt = Number.isFinite(Number(todo.deletedAt)) ? Number(todo.deletedAt) : null;
+      const updatedAt = Number(todo.updatedAt) || deletedAt || completedAt || createdAt;
+
+      return {
+        ...todo,
+        id: String(todo.id || createId()),
+        text: String(todo.text || "").trim(),
+        dueDate: isValidISODate(todo.dueDate) ? todo.dueDate : getISODate(new Date(createdAt)),
+        repeat: ["none", "daily", "weekly", "monthly"].includes(todo.repeat) ? todo.repeat : "none",
+        done: Boolean(todo.done),
+        createdAt,
+        completedAt,
+        updatedAt,
+        deletedAt
+      };
+    }
+
+    function normalizePeriodRecord(record = {}) {
+      const createdAt = Number(record.createdAt) || Date.now();
+      const startDate = isValidISODate(record.startDate) ? record.startDate : getISODate(new Date(createdAt));
+      const safeEndDate = isValidISODate(record.endDate) && record.endDate >= startDate ? record.endDate : null;
+      const dailyLogs = {};
+
+      Object.entries(record.dailyLogs || {}).forEach(([date, log]) => {
+        if (!isValidISODate(date) || !log || typeof log !== "object") return;
+        dailyLogs[date] = {
+          flow: PERIOD_FLOW_LABELS[log.flow] ? log.flow : "",
+          pain: PERIOD_PAIN_LABELS[log.pain] ? log.pain : "",
+          mood: PERIOD_MOOD_LABELS[log.mood] ? log.mood : "",
+          symptoms: Array.isArray(log.symptoms) ? log.symptoms.filter((item) => PERIOD_SYMPTOMS.includes(item)) : [],
+          note: String(log.note || "").slice(0, 160),
+          updatedAt: Number(log.updatedAt) || Number(record.updatedAt) || createdAt
+        };
+      });
+
+      const deletedAt = Number.isFinite(Number(record.deletedAt)) ? Number(record.deletedAt) : null;
+      const updatedAt = Number(record.updatedAt) || deletedAt || createdAt;
+      return {
+        ...record,
+        id: String(record.id || createId()),
+        startDate,
+        endDate: safeEndDate,
+        dailyLogs,
+        createdAt,
+        updatedAt,
+        deletedAt
+      };
+    }
+
     function loadState() {
-      state.todos = loadJSON(STORAGE.todos, []);
+      state.todos = loadJSON(STORAGE.todos, []).map(normalizeTodoRecord);
       state.entries = loadJSON(STORAGE.entries, []);
       state.decisions = loadJSON(STORAGE.decisions, []);
+      state.periodRecords = loadJSON(STORAGE.periodRecords, []).map(normalizePeriodRecord);
+      state.syncSettings = normalizeSyncSettings(loadJSON(STORAGE.syncSettings, {}));
+      state.syncStatus = state.syncSettings.lastStatus || "本机模式";
       const savedSettings = loadJSON(STORAGE.settings, {});
       const hasStartedAt = Number.isFinite(savedSettings.startedAt);
       state.settings = {
@@ -2272,10 +2776,14 @@
         saveSettings();
       }
       migrateTodos();
+      migratePeriodRecords();
     }
 
-    function saveTodos() {
+    function saveTodos(options = {}) {
       saveJSON(STORAGE.todos, state.todos);
+      if (options.sync !== false) {
+        queueSharedSync();
+      }
     }
 
     function saveEntries() {
@@ -2290,6 +2798,17 @@
       saveJSON(STORAGE.settings, state.settings);
     }
 
+    function savePeriodRecords(options = {}) {
+      saveJSON(STORAGE.periodRecords, state.periodRecords);
+      if (options.sync !== false) {
+        queueSharedSync();
+      }
+    }
+
+    function saveSyncSettingsLocal() {
+      saveJSON(STORAGE.syncSettings, state.syncSettings);
+    }
+
     function getBackupPayload() {
       return {
         app: "噜噜 Life",
@@ -2300,6 +2819,7 @@
           todos: state.todos,
           entries: state.entries,
           decisions: state.decisions,
+          periodRecords: state.periodRecords,
           settings: state.settings,
           petPosition: loadJSON(STORAGE.petPosition, null),
           lastOpenedAt: Number(localStorage.getItem(STORAGE.lastOpenedAt)) || null
@@ -2364,16 +2884,19 @@
       const todos = Array.isArray(data.todos) ? data.todos : [];
       const entries = Array.isArray(data.entries) ? data.entries : [];
       const decisions = Array.isArray(data.decisions) ? data.decisions : [];
+      const periodRecords = Array.isArray(data.periodRecords) ? data.periodRecords : [];
       const settings = normalizeImportedSettings(data.settings);
       const petPosition = data.petPosition;
 
-      state.todos = todos;
+      state.todos = todos.map(normalizeTodoRecord);
       state.entries = entries;
       state.decisions = decisions;
+      state.periodRecords = periodRecords.map(normalizePeriodRecord);
       state.settings = settings;
-      saveTodos();
+      saveTodos({ sync: false });
       saveEntries();
       saveDecisions();
+      savePeriodRecords({ sync: false });
       saveSettings();
 
       if (Number.isFinite(data.lastOpenedAt)) {
@@ -2388,6 +2911,7 @@
       }
 
       migrateTodos();
+      migratePeriodRecords();
       applyTheme();
       initPetPosition();
       renderAll();
@@ -2401,7 +2925,7 @@
       reader.addEventListener("load", () => {
         try {
           const payload = JSON.parse(String(reader.result || ""));
-          const confirmed = window.confirm("导入会覆盖当前待办、账本、决定历史和设置。确定继续吗？");
+          const confirmed = window.confirm("导入会覆盖当前待办、健康记录、账本、决定历史和设置。确定继续吗？");
           if (!confirmed) return;
 
           applyImportedData(payload);
@@ -2561,6 +3085,20 @@
       return new Date(year, month - 1, day);
     }
 
+    function isValidISODate(dateString) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dateString || ""))) return false;
+      const date = parseISODate(dateString);
+      return getISODate(date) === dateString;
+    }
+
+    function daysBetween(startDate, endDate) {
+      return Math.round((parseISODate(endDate) - parseISODate(startDate)) / DAY_MS);
+    }
+
+    function inclusiveDays(startDate, endDate) {
+      return Math.max(1, daysBetween(startDate, endDate) + 1);
+    }
+
     function addDays(dateString, days) {
       const date = parseISODate(dateString);
       date.setDate(date.getDate() + days);
@@ -2594,18 +3132,18 @@
     }
 
     function isTodoOverdue(todo) {
-      return !todo.done && getTodoDate(todo) < getISODate();
+      return !todo.deletedAt && !todo.done && getTodoDate(todo) < getISODate();
     }
 
     function isTodoInThisWeek(todo) {
       const today = getISODate();
       const weekEnd = addDays(today, 6);
       const date = getTodoDate(todo);
-      return !todo.done && date >= today && date <= weekEnd;
+      return !todo.deletedAt && !todo.done && date >= today && date <= weekEnd;
     }
 
     function isTodoFuture(todo) {
-      return !todo.done && getTodoDate(todo) > addDays(getISODate(), 6);
+      return !todo.deletedAt && !todo.done && getTodoDate(todo) > addDays(getISODate(), 6);
     }
 
     function getRepeatLabel(repeat) {
@@ -2648,6 +3186,13 @@
 
     function migrateTodos() {
       let changed = false;
+      state.todos = state.todos.map((todo) => {
+        const normalized = normalizeTodoRecord(todo);
+        if (JSON.stringify(normalized) !== JSON.stringify(todo)) {
+          changed = true;
+        }
+        return normalized;
+      });
       state.todos.forEach((todo) => {
         if (!todo.dueDate) {
           todo.dueDate = getISODate(new Date(todo.createdAt || Date.now()));
@@ -2659,8 +3204,27 @@
         }
       });
       if (changed) {
-        saveTodos();
+        saveTodos({ sync: false });
       }
+    }
+
+    function migratePeriodRecords() {
+      const normalized = state.periodRecords.map(normalizePeriodRecord);
+      const changed = JSON.stringify(normalized) !== JSON.stringify(state.periodRecords);
+      state.periodRecords = normalized;
+      if (changed) {
+        savePeriodRecords({ sync: false });
+      }
+    }
+
+    function getLiveTodos() {
+      return state.todos.filter((todo) => !todo.deletedAt);
+    }
+
+    function getLivePeriodRecords() {
+      return state.periodRecords
+        .filter((record) => !record.deletedAt)
+        .sort((a, b) => b.startDate.localeCompare(a.startDate) || b.updatedAt - a.updatedAt);
     }
 
     function formatTime(timestamp) {
@@ -2741,8 +3305,9 @@
       document.querySelectorAll("[data-view]").forEach((view) => {
         view.classList.toggle("is-active", view.dataset.view === viewName);
       });
+      const navViewName = viewName === "decider" ? "home" : viewName;
       document.querySelectorAll("[data-nav]").forEach((button) => {
-        if (button.dataset.nav === viewName) {
+        if (button.dataset.nav === navViewName) {
           button.setAttribute("aria-current", "page");
         } else {
           button.removeAttribute("aria-current");
@@ -2755,9 +3320,11 @@
     function renderHome() {
       const today = getISODate();
       const tomorrow = addDays(today, 1);
-      const todayTodos = state.todos.filter((todo) => getTodoDate(todo) === today);
-      const tomorrowTodos = state.todos.filter((todo) => getTodoDate(todo) === tomorrow);
-      const overdueTodos = state.todos.filter(isTodoOverdue).sort((a, b) => getTodoDate(a).localeCompare(getTodoDate(b)));
+      const todos = getLiveTodos();
+      const periodSummary = getPeriodSummary();
+      const todayTodos = todos.filter((todo) => getTodoDate(todo) === today);
+      const tomorrowTodos = todos.filter((todo) => getTodoDate(todo) === tomorrow);
+      const overdueTodos = todos.filter(isTodoOverdue).sort((a, b) => getTodoDate(a).localeCompare(getTodoDate(b)));
       const todoLeft = todayTodos.filter((todo) => !todo.done).length;
       const todoDoneToday = todayTodos.filter((todo) => todo.done).length;
       const tomorrowLeft = tomorrowTodos.filter((todo) => !todo.done).length;
@@ -2771,6 +3338,7 @@
       document.querySelector("#homeTodoLeft").textContent = todoLeft;
       document.querySelector("#homeTodoDone").textContent = todoDoneToday;
       document.querySelector("#homeTodaySpend").textContent = formatMoney(todaySpend);
+      document.querySelector("#homeHealthStatus").textContent = getHomeHealthLabel(periodSummary);
 
       let insight = "慢慢启动也很好。噜噜会一直在旁边晃悠，顺便监督你别把生活过成未读消息。";
       let focus = {
@@ -2797,6 +3365,28 @@
         insight = "待办有点多了。噜噜建议先挑一个最小的，不然它们会组成合唱团。";
         focus.title = "清掉一个小任务";
         focus.text = "今天的待办偏多，不要试图一口吃完。先拿最小的开刀。";
+      } else if (periodSummary.status === "active") {
+        insight = `经期第 ${periodSummary.dayNumber} 天。今天对身体温柔一点，任务可以小一点。`;
+        focus = {
+          title: "照顾身体优先",
+          text: "身体正在占用一部分能量，今天适合少一点硬扛，多一点热乎和休息。",
+          meta: "噜噜建议：记录一下状态，别把不舒服当成背景音。",
+          button: "去健康",
+          view: "health",
+          date: today,
+          scope: "today"
+        };
+      } else if (periodSummary.status === "dueSoon") {
+        insight = `预计 ${periodSummary.daysUntilNext} 天后可能来姨妈。噜噜建议提前备好热饮和卫生用品。`;
+        focus = {
+          title: "姨妈可能快来了",
+          text: "提前准备一点，比到时候临场发挥舒服很多。",
+          meta: `预计日期：${formatTodoDateLabel(periodSummary.nextStart)}`,
+          button: "看健康",
+          view: "health",
+          date: today,
+          scope: "today"
+        };
       } else if (todoDoneToday > 0 && todoLeft === 0) {
         insight = "今天完成得不错。噜噜表面淡定，心里已经在小跳。";
         focus = {
@@ -2845,7 +3435,7 @@
         ["逾期", overdueCount ? `${overdueCount} 件` : "清净"],
         ["明天", tomorrowLeft ? `${tomorrowLeft} 件` : "暂空"],
         ["预算", budgetText],
-        ["本月支出", formatMoney(sumEntries((entry) => entry.kind === "expense" && getMonthKey(new Date(entry.createdAt)) === getMonthKey()))]
+        ["健康", getSignalHealthLabel(periodSummary)]
       ].map(([label, value]) => `
         <div class="signal-chip">
           <p class="signal-label">${label}</p>
@@ -2857,14 +3447,15 @@
     function renderTodoAssist() {
       const today = getISODate();
       const tomorrow = addDays(today, 1);
-      const overdueTodos = state.todos
+      const todos = getLiveTodos();
+      const overdueTodos = todos
         .filter(isTodoOverdue)
         .sort((a, b) => getTodoDate(a).localeCompare(getTodoDate(b)))
         .slice(0, 4);
-      const tomorrowTodos = state.todos
+      const tomorrowTodos = todos
         .filter((todo) => getTodoDate(todo) === tomorrow && !todo.done)
         .slice(0, 4);
-      const repeatTodos = state.todos
+      const repeatTodos = todos
         .filter((todo) => !todo.done && (todo.repeat ?? "none") !== "none")
         .sort((a, b) => getTodoDate(a).localeCompare(getTodoDate(b)))
         .slice(0, 4);
@@ -2893,14 +3484,15 @@
     function getTodoScopeCounts() {
       const today = getISODate();
       const tomorrow = addDays(today, 1);
+      const todos = getLiveTodos();
 
       return {
-        today: state.todos.filter((todo) => getTodoDate(todo) === today && !todo.done).length,
-        tomorrow: state.todos.filter((todo) => getTodoDate(todo) === tomorrow && !todo.done).length,
-        overdue: state.todos.filter(isTodoOverdue).length,
-        week: state.todos.filter(isTodoInThisWeek).length,
-        future: state.todos.filter(isTodoFuture).length,
-        done: state.todos.filter((todo) => todo.done).length
+        today: todos.filter((todo) => getTodoDate(todo) === today && !todo.done).length,
+        tomorrow: todos.filter((todo) => getTodoDate(todo) === tomorrow && !todo.done).length,
+        overdue: todos.filter(isTodoOverdue).length,
+        week: todos.filter(isTodoInThisWeek).length,
+        future: todos.filter(isTodoFuture).length,
+        done: todos.filter((todo) => todo.done).length
       };
     }
 
@@ -2921,26 +3513,27 @@
       const today = getISODate();
       const tomorrow = addDays(today, 1);
       const scope = state.todoScope;
+      const todos = getLiveTodos();
 
       if (scope === "today") {
-        return state.todos.filter((todo) => getTodoDate(todo) === today);
+        return todos.filter((todo) => getTodoDate(todo) === today);
       }
       if (scope === "tomorrow") {
-        return state.todos.filter((todo) => getTodoDate(todo) === tomorrow);
+        return todos.filter((todo) => getTodoDate(todo) === tomorrow);
       }
       if (scope === "overdue") {
-        return state.todos.filter(isTodoOverdue);
+        return todos.filter(isTodoOverdue);
       }
       if (scope === "week") {
-        return state.todos.filter(isTodoInThisWeek);
+        return todos.filter(isTodoInThisWeek);
       }
       if (scope === "future") {
-        return state.todos.filter(isTodoFuture);
+        return todos.filter(isTodoFuture);
       }
       if (scope === "done") {
-        return state.todos.filter((todo) => todo.done);
+        return todos.filter((todo) => todo.done);
       }
-      return state.todos.filter((todo) => getTodoDate(todo) === state.selectedTodoDate);
+      return todos.filter((todo) => getTodoDate(todo) === state.selectedTodoDate);
     }
 
     function getTodoEmptyText() {
@@ -2981,7 +3574,7 @@
       const scopedTodos = getScopedTodos();
       const activeTodos = scopedTodos.filter((todo) => !todo.done).length;
       const doneInScope = scopedTodos.filter((todo) => todo.done).length;
-      const overdueCount = state.todos.filter(isTodoOverdue).length;
+      const overdueCount = getLiveTodos().filter(isTodoOverdue).length;
       const scopeLabel = getTodoScopeLabel();
 
       document.querySelector("#todoDateLabel").textContent = formatTodoDateLabel(state.selectedTodoDate);
@@ -3035,6 +3628,667 @@
           </button>
         </article>
       `).join("");
+    }
+
+    function setInputValueIfUnfocused(selector, value) {
+      const input = document.querySelector(selector);
+      if (input && document.activeElement !== input) {
+        input.value = value ?? "";
+      }
+    }
+
+    function formatShortDate(dateString) {
+      if (!isValidISODate(dateString)) return "--";
+      return new Intl.DateTimeFormat("zh-CN", {
+        month: "numeric",
+        day: "numeric"
+      }).format(parseISODate(dateString));
+    }
+
+    function averageRounded(values, fallback) {
+      const cleanValues = values.filter((value) => Number.isFinite(value) && value > 0);
+      if (!cleanValues.length) return fallback;
+      return Math.round(cleanValues.reduce((total, value) => total + value, 0) / cleanValues.length);
+    }
+
+    function getPeriodStats() {
+      const records = getLivePeriodRecords().slice().sort((a, b) => a.startDate.localeCompare(b.startDate));
+      const cycleLengths = [];
+      const periodLengths = [];
+
+      records.forEach((record, index) => {
+        if (record.endDate) {
+          const length = inclusiveDays(record.startDate, record.endDate);
+          if (length >= 1 && length <= 12) {
+            periodLengths.push(length);
+          }
+        }
+        if (index > 0) {
+          const length = daysBetween(records[index - 1].startDate, record.startDate);
+          if (length >= 15 && length <= 60) {
+            cycleLengths.push(length);
+          }
+        }
+      });
+
+      return {
+        averageCycleDays: averageRounded(cycleLengths.slice(-6), PERIOD_DEFAULT_CYCLE_DAYS),
+        averagePeriodDays: averageRounded(periodLengths.slice(-6), PERIOD_DEFAULT_LENGTH_DAYS),
+        completedCount: periodLengths.length,
+        cycleCount: cycleLengths.length
+      };
+    }
+
+    function getFertileWindow(nextStartDate) {
+      if (!isValidISODate(nextStartDate)) return null;
+      const ovulationDate = addDays(nextStartDate, -14);
+      return {
+        ovulationDate,
+        startDate: addDays(ovulationDate, -5),
+        endDate: addDays(ovulationDate, 1)
+      };
+    }
+
+    function getActivePeriodRecord(today = getISODate()) {
+      return getLivePeriodRecords().find((record) => {
+        return record.startDate <= today && (!record.endDate || record.endDate >= today);
+      }) ?? null;
+    }
+
+    function getPeriodSummary(today = getISODate()) {
+      const records = getLivePeriodRecords();
+      const stats = getPeriodStats();
+      const activeRecord = getActivePeriodRecord(today);
+
+      if (!records.length) {
+        return {
+          status: "empty",
+          averageCycleDays: stats.averageCycleDays,
+          averagePeriodDays: stats.averagePeriodDays,
+          fertileWindow: null
+        };
+      }
+
+      if (activeRecord) {
+        const nextStart = addDays(activeRecord.startDate, stats.averageCycleDays);
+        return {
+          status: "active",
+          activeRecord,
+          dayNumber: inclusiveDays(activeRecord.startDate, today),
+          expectedEnd: activeRecord.endDate || addDays(activeRecord.startDate, stats.averagePeriodDays - 1),
+          nextStart,
+          fertileWindow: getFertileWindow(nextStart),
+          averageCycleDays: stats.averageCycleDays,
+          averagePeriodDays: stats.averagePeriodDays
+        };
+      }
+
+      const lastRecord = records[0];
+      const nextStart = addDays(lastRecord.startDate, stats.averageCycleDays);
+      const daysUntilNext = daysBetween(today, nextStart);
+      const status = daysUntilNext < 0 ? "late" : daysUntilNext <= 3 ? "dueSoon" : "idle";
+
+      return {
+        status,
+        lastRecord,
+        nextStart,
+        daysUntilNext,
+        fertileWindow: getFertileWindow(nextStart),
+        averageCycleDays: stats.averageCycleDays,
+        averagePeriodDays: stats.averagePeriodDays
+      };
+    }
+
+    function getHomeHealthLabel(summary = getPeriodSummary()) {
+      if (summary.status === "active") return `第 ${summary.dayNumber} 天`;
+      if (summary.status === "dueSoon") return `${summary.daysUntilNext} 天后`;
+      if (summary.status === "late") return `晚 ${Math.abs(summary.daysUntilNext)} 天`;
+      if (summary.nextStart) return formatShortDate(summary.nextStart);
+      return "未记录";
+    }
+
+    function getSignalHealthLabel(summary = getPeriodSummary()) {
+      if (summary.status === "active") return `经期第 ${summary.dayNumber} 天`;
+      if (summary.status === "dueSoon") return `${summary.daysUntilNext} 天后`;
+      if (summary.status === "late") return `预计已晚 ${Math.abs(summary.daysUntilNext)} 天`;
+      if (summary.nextStart) return `预计 ${formatShortDate(summary.nextStart)}`;
+      return "未记录";
+    }
+
+    function getPeriodStatusCopy(summary = getPeriodSummary()) {
+      if (summary.status === "empty") {
+        return {
+          title: "还没有记录",
+          text: "先记录一次开始日期，噜噜就能帮你估算下次时间。"
+        };
+      }
+      if (summary.status === "active") {
+        return {
+          title: `经期第 ${summary.dayNumber} 天`,
+          text: `预计这次会在 ${formatShortDate(summary.expectedEnd)} 左右结束。今天任务可以轻一点，身体优先。`
+        };
+      }
+      if (summary.status === "dueSoon") {
+        return {
+          title: `预计 ${summary.daysUntilNext} 天后到来`,
+          text: `下次预计在 ${formatShortDate(summary.nextStart)}。可以提前准备卫生用品和热乎的东西。`
+        };
+      }
+      if (summary.status === "late") {
+        return {
+          title: `预计已晚 ${Math.abs(summary.daysUntilNext)} 天`,
+          text: "周期偶尔会受压力、睡眠和身体状态影响。噜噜只做记录提醒，不替代医生判断。"
+        };
+      }
+      return {
+        title: `预计 ${formatShortDate(summary.nextStart)}`,
+        text: `按目前记录估算，下次大约还有 ${summary.daysUntilNext} 天。`
+      };
+    }
+
+    function findPeriodRecordForDate(dateString) {
+      return getLivePeriodRecords().find((record) => {
+        return record.startDate <= dateString && (!record.endDate || dateString <= record.endDate);
+      }) ?? null;
+    }
+
+    function getCurrentPeriodFormRecord() {
+      if (!state.editingPeriodId) return null;
+      return state.periodRecords.find((record) => record.id === state.editingPeriodId && !record.deletedAt) ?? null;
+    }
+
+    function renderPeriodSymptomChips(selected = []) {
+      document.querySelector("#periodSymptomChips").innerHTML = PERIOD_SYMPTOMS.map((symptom) => `
+        <button class="symptom-chip ${selected.includes(symptom) ? "is-active" : ""}" type="button" data-period-symptom="${escapeHTML(symptom)}">${escapeHTML(symptom)}</button>
+      `).join("");
+    }
+
+    function renderHealth() {
+      const summary = getPeriodSummary();
+      const statusCopy = getPeriodStatusCopy(summary);
+      const currentLogRecord = findPeriodRecordForDate(state.selectedPeriodDate);
+      const currentLog = currentLogRecord?.dailyLogs?.[state.selectedPeriodDate] ?? {};
+      const editingRecord = getCurrentPeriodFormRecord();
+      const formStartDate = editingRecord?.startDate ?? "";
+      const formEndDate = editingRecord?.endDate ?? "";
+      const fertileWindow = summary.fertileWindow;
+      const nextText = summary.nextStart ? formatShortDate(summary.nextStart) : "--";
+      const fertileText = fertileWindow ? `${formatShortDate(fertileWindow.startDate)}-${formatShortDate(fertileWindow.endDate)}` : "--";
+      const completedCount = getPeriodStats().completedCount;
+      const history = getLivePeriodRecords();
+
+      document.querySelector("#periodStatusTitle").textContent = statusCopy.title;
+      document.querySelector("#periodStatusText").textContent = statusCopy.text;
+      document.querySelector("#periodNextText").textContent = nextText;
+      document.querySelector("#periodCycleText").textContent = `${summary.averageCycleDays} 天`;
+      document.querySelector("#periodFertileText").textContent = fertileText;
+      document.querySelector("#periodSaveButton").textContent = editingRecord ? "保存修改" : "保存周期";
+      document.querySelector("#periodCancelEditButton").hidden = !editingRecord;
+      setInputValueIfUnfocused("#periodStartInput", formStartDate);
+      setInputValueIfUnfocused("#periodEndInput", formEndDate);
+      setInputValueIfUnfocused("#periodLogDateInput", state.selectedPeriodDate);
+      setInputValueIfUnfocused("#periodFlowInput", currentLog.flow || "");
+      setInputValueIfUnfocused("#periodPainInput", currentLog.pain || "");
+      setInputValueIfUnfocused("#periodMoodInput", currentLog.mood || "");
+      setInputValueIfUnfocused("#periodNoteInput", currentLog.note || "");
+      renderPeriodSymptomChips(currentLog.symptoms || []);
+
+      document.querySelector("#periodPredictionText").textContent = completedCount
+        ? `已经有 ${completedCount} 次完整记录，预测会逐渐贴近真实节奏。`
+        : "先记录几次完整开始和结束日期，预测会更靠谱。";
+
+      document.querySelector("#periodPredictionGrid").innerHTML = [
+        ["预计下次", summary.nextStart ? `${formatShortDate(summary.nextStart)}${summary.daysUntilNext >= 0 ? ` · ${summary.daysUntilNext} 天后` : ""}` : "记录后出现"],
+        ["排卵参考", fertileWindow ? `${formatShortDate(fertileWindow.ovulationDate)} 左右` : "记录后估算"],
+        ["记录完整度", completedCount ? `${completedCount} 次完整周期` : "等待第一次完整记录"]
+      ].map(([title, body]) => `
+        <article class="preview-card">
+          <p class="preview-title">${title}</p>
+          <ul class="preview-list"><li>${body}</li></ul>
+        </article>
+      `).join("");
+
+      document.querySelector("#periodHistorySummary").textContent = history.length
+        ? `${history.length} 次周期记录，${completedCount} 次已结束。`
+        : "还没有历史记录。";
+      document.querySelector("#periodHistoryList").innerHTML = history.length
+        ? history.map((record) => {
+          const endText = record.endDate ? formatShortDate(record.endDate) : "进行中";
+          const lengthText = record.endDate ? `${inclusiveDays(record.startDate, record.endDate)} 天` : `第 ${inclusiveDays(record.startDate, getISODate())} 天`;
+          const logCount = Object.keys(record.dailyLogs || {}).length;
+          return `
+            <article class="period-history-item" data-period-id="${record.id}">
+              <div class="item-body">
+                <p class="item-title">${formatShortDate(record.startDate)} - ${endText}</p>
+                <p class="item-meta">${lengthText} · ${logCount} 条状态记录</p>
+              </div>
+              <div class="period-history-actions">
+                <button class="icon-btn" type="button" aria-label="编辑周期" data-action="edit-period">
+                  <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                  </svg>
+                </button>
+                <button class="icon-btn" type="button" aria-label="删除周期" data-action="delete-period">
+                  <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 6h18" />
+                    <path d="M8 6V4h8v2" />
+                    <path d="M7 6l1 14h8l1-14" />
+                  </svg>
+                </button>
+              </div>
+            </article>
+          `;
+        }).join("")
+        : `<div class="empty-state">先记录一次开始日期，噜噜就有身体小档案了。</div>`;
+    }
+
+    function createPeriodRecord(startDate, endDate = null) {
+      const now = Date.now();
+      return {
+        id: createId(),
+        startDate,
+        endDate,
+        dailyLogs: {},
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null
+      };
+    }
+
+    function savePeriodFromForm() {
+      const startDate = document.querySelector("#periodStartInput").value;
+      const endDate = document.querySelector("#periodEndInput").value || null;
+
+      if (!isValidISODate(startDate)) {
+        petReact("talk", "先选一个开始日期，噜噜不能靠玄学算周期。");
+        return;
+      }
+      if (endDate && (!isValidISODate(endDate) || endDate < startDate)) {
+        petReact("talk", "结束日期不能早于开始日期，时间线别打结。");
+        return;
+      }
+
+      const editingRecord = getCurrentPeriodFormRecord();
+      if (editingRecord) {
+        editingRecord.startDate = startDate;
+        editingRecord.endDate = endDate;
+        editingRecord.updatedAt = Date.now();
+        state.editingPeriodId = null;
+      } else {
+        state.periodRecords.unshift(createPeriodRecord(startDate, endDate));
+      }
+
+      state.selectedPeriodDate = startDate;
+      savePeriodRecords();
+      renderAll();
+      petReact(endDate ? "talk" : "sad", endDate ? pickOne(petLines.periodDone) : pickOne(petLines.period));
+    }
+
+    function startPeriodToday() {
+      const today = getISODate();
+      if (getActivePeriodRecord(today)) {
+        petReact("talk", "已经在记录中了，不用重复按。身体不是打卡机。");
+        return;
+      }
+      state.periodRecords.unshift(createPeriodRecord(today));
+      state.selectedPeriodDate = today;
+      state.editingPeriodId = null;
+      savePeriodRecords();
+      renderAll();
+      petReact("sad", pickOne(petLines.period));
+    }
+
+    function endPeriodToday() {
+      const today = getISODate();
+      const activeRecord = getActivePeriodRecord(today);
+      if (!activeRecord) {
+        petReact("talk", "现在没有进行中的记录，先点“今天来了”或手动保存一次开始日期。");
+        return;
+      }
+      activeRecord.endDate = today;
+      activeRecord.updatedAt = Date.now();
+      savePeriodRecords();
+      renderAll();
+      petReact("happy", pickOne(petLines.periodDone));
+    }
+
+    function editPeriodRecord(recordId) {
+      const record = state.periodRecords.find((item) => item.id === recordId && !item.deletedAt);
+      if (!record) return;
+      state.editingPeriodId = recordId;
+      state.selectedPeriodDate = record.startDate;
+      renderAll();
+      petReact("talk", "我把这次记录摊开了，改完记得保存。");
+    }
+
+    function deletePeriodRecord(recordId) {
+      const record = state.periodRecords.find((item) => item.id === recordId);
+      if (!record) return;
+      record.deletedAt = Date.now();
+      record.updatedAt = record.deletedAt;
+      if (state.editingPeriodId === recordId) {
+        state.editingPeriodId = null;
+      }
+      savePeriodRecords();
+      renderAll();
+      petReact("talk", "这条周期记录删掉了。噜噜会重新估算。");
+    }
+
+    function savePeriodDailyLog() {
+      const date = document.querySelector("#periodLogDateInput").value || getISODate();
+      if (!isValidISODate(date)) {
+        petReact("talk", "这个日期不太对，噜噜的小本子写不进去。");
+        return;
+      }
+
+      const record = findPeriodRecordForDate(date);
+      if (!record) {
+        petReact("talk", "先记录这次姨妈的开始日期，再写当天状态。");
+        return;
+      }
+
+      const symptoms = [...document.querySelectorAll("[data-period-symptom].is-active")]
+        .map((button) => button.dataset.periodSymptom)
+        .filter((symptom) => PERIOD_SYMPTOMS.includes(symptom));
+      record.dailyLogs[date] = {
+        flow: document.querySelector("#periodFlowInput").value,
+        pain: document.querySelector("#periodPainInput").value,
+        mood: document.querySelector("#periodMoodInput").value,
+        symptoms,
+        note: document.querySelector("#periodNoteInput").value.trim().slice(0, 160),
+        updatedAt: Date.now()
+      };
+      record.updatedAt = Date.now();
+      state.selectedPeriodDate = date;
+      savePeriodRecords();
+      renderAll();
+      petReact("talk", "当天状态记好了。今天对身体好一点，别硬撑。");
+    }
+
+    function isSharedSyncReady() {
+      return Boolean(
+        state.syncSettings.enabled &&
+        state.syncSettings.supabaseUrl &&
+        state.syncSettings.anonKey &&
+        state.syncSettings.roomCode &&
+        state.syncSettings.roomHash &&
+        window.crypto?.subtle
+      );
+    }
+
+    function setSharedSyncStatus(title, note = title) {
+      state.syncStatus = title;
+      state.syncSettings.lastStatus = note;
+      saveSyncSettingsLocal();
+      const titleNode = document.querySelector("#syncStatusTitle");
+      const textNode = document.querySelector("#syncStatusText");
+      if (titleNode) titleNode.textContent = title;
+      if (textNode) textNode.textContent = note;
+    }
+
+    function queueSharedSync(delay = 900) {
+      if (sharedSyncSuppressed || !isSharedSyncReady()) return;
+      window.clearTimeout(sharedSyncTimer);
+      sharedSyncTimer = window.setTimeout(() => {
+        syncSharedData(false);
+      }, delay);
+    }
+
+    function bytesToBase64(bytes) {
+      let binary = "";
+      const chunkSize = 0x8000;
+      for (let index = 0; index < bytes.length; index += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    function base64ToBytes(base64) {
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let index = 0; index < binary.length; index += 1) {
+        bytes[index] = binary.charCodeAt(index);
+      }
+      return bytes;
+    }
+
+    async function hashText(text) {
+      const bytes = new TextEncoder().encode(text);
+      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function getSharedSyncKey() {
+      const encoder = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(state.syncSettings.roomCode),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+      );
+
+      return crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: encoder.encode(`lulu-life:${state.syncSettings.roomHash}`),
+          iterations: 150000,
+          hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function encryptSharedPayload(payload) {
+      const key = await getSharedSyncKey();
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const encoded = new TextEncoder().encode(JSON.stringify(payload));
+      const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded);
+      return {
+        version: 1,
+        algorithm: "AES-GCM",
+        iv: bytesToBase64(iv),
+        data: bytesToBase64(new Uint8Array(encrypted))
+      };
+    }
+
+    async function decryptSharedPayload(encryptedPayload) {
+      if (!encryptedPayload) return null;
+      const payload = typeof encryptedPayload === "string" ? JSON.parse(encryptedPayload) : encryptedPayload;
+      const key = await getSharedSyncKey();
+      const decrypted = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: base64ToBytes(payload.iv) },
+        key,
+        base64ToBytes(payload.data)
+      );
+      return JSON.parse(new TextDecoder().decode(decrypted));
+    }
+
+    function getRecordStamp(record) {
+      return Number(record.updatedAt) || Number(record.deletedAt) || Number(record.completedAt) || Number(record.createdAt) || 0;
+    }
+
+    function mergeSharedRecords(localRecords = [], remoteRecords = [], normalizer) {
+      const merged = new Map();
+      [...remoteRecords, ...localRecords].forEach((record) => {
+        const normalized = normalizer(record);
+        const existing = merged.get(normalized.id);
+        if (!existing || getRecordStamp(normalized) >= getRecordStamp(existing)) {
+          merged.set(normalized.id, normalized);
+        }
+      });
+      return [...merged.values()];
+    }
+
+    function makeSharedPayload() {
+      return {
+        version: SYNC_PAYLOAD_VERSION,
+        updatedAt: Date.now(),
+        todos: state.todos.map(normalizeTodoRecord),
+        periodRecords: state.periodRecords.map(normalizePeriodRecord)
+      };
+    }
+
+    function mergeSharedPayload(remotePayload, localPayload = makeSharedPayload()) {
+      if (!remotePayload || typeof remotePayload !== "object") return localPayload;
+      return {
+        version: SYNC_PAYLOAD_VERSION,
+        updatedAt: Date.now(),
+        todos: mergeSharedRecords(localPayload.todos, remotePayload.todos, normalizeTodoRecord),
+        periodRecords: mergeSharedRecords(localPayload.periodRecords, remotePayload.periodRecords, normalizePeriodRecord)
+      };
+    }
+
+    function applySharedPayload(payload) {
+      if (!payload || typeof payload !== "object") return;
+      sharedSyncSuppressed = true;
+      state.todos = Array.isArray(payload.todos) ? payload.todos.map(normalizeTodoRecord) : state.todos;
+      state.periodRecords = Array.isArray(payload.periodRecords) ? payload.periodRecords.map(normalizePeriodRecord) : state.periodRecords;
+      saveTodos({ sync: false });
+      savePeriodRecords({ sync: false });
+      sharedSyncSuppressed = false;
+      renderAll();
+    }
+
+    function getSupabaseHeaders() {
+      return {
+        apikey: state.syncSettings.anonKey,
+        Authorization: `Bearer ${state.syncSettings.anonKey}`,
+        "Content-Type": "application/json"
+      };
+    }
+
+    async function fetchRemoteSharedPayload() {
+      const baseUrl = state.syncSettings.supabaseUrl.replace(/\/+$/, "");
+      const query = `room_hash=eq.${encodeURIComponent(state.syncSettings.roomHash)}&select=room_hash,encrypted_payload,payload_version,updated_at,updated_by`;
+      const response = await fetch(`${baseUrl}/rest/v1/${SYNC_TABLE_NAME}?${query}`, {
+        headers: getSupabaseHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`FETCH_FAILED_${response.status}`);
+      }
+
+      const rows = await response.json();
+      if (!Array.isArray(rows) || !rows.length) return null;
+      return decryptSharedPayload(rows[0].encrypted_payload);
+    }
+
+    async function pushRemoteSharedPayload(payload) {
+      const baseUrl = state.syncSettings.supabaseUrl.replace(/\/+$/, "");
+      const encryptedPayload = await encryptSharedPayload(payload);
+      const body = {
+        room_hash: state.syncSettings.roomHash,
+        encrypted_payload: encryptedPayload,
+        payload_version: SYNC_PAYLOAD_VERSION,
+        updated_at: new Date().toISOString(),
+        updated_by: state.syncSettings.deviceId
+      };
+      const response = await fetch(`${baseUrl}/rest/v1/${SYNC_TABLE_NAME}?on_conflict=room_hash`, {
+        method: "POST",
+        headers: {
+          ...getSupabaseHeaders(),
+          Prefer: "resolution=merge-duplicates,return=minimal"
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        throw new Error(`PUSH_FAILED_${response.status}`);
+      }
+    }
+
+    async function syncSharedData(shouldTalk = false) {
+      if (!isSharedSyncReady()) {
+        setSharedSyncStatus("本机模式", "同步配置还没填完整，健康和待办暂时只保存在本机。");
+        if (shouldTalk) petReact("talk", "同步还没配置好，先本机记录也完全可以。");
+        return;
+      }
+      if (sharedSyncInProgress) return;
+
+      sharedSyncInProgress = true;
+      setSharedSyncStatus("同步中", "正在合并健康记录和待办。");
+      try {
+        const remotePayload = await fetchRemoteSharedPayload();
+        const mergedPayload = mergeSharedPayload(remotePayload, makeSharedPayload());
+        applySharedPayload(mergedPayload);
+        await pushRemoteSharedPayload(mergedPayload);
+        state.syncSettings.lastSyncedAt = Date.now();
+        setSharedSyncStatus("已同步", `上次同步：${formatTime(state.syncSettings.lastSyncedAt)}`);
+        if (shouldTalk) petReact("talk", pickOne(petLines.sync));
+      } catch (error) {
+        setSharedSyncStatus("同步失败", "请检查 Supabase 地址、anon key、同步表或情侣同步码。");
+        if (shouldTalk) petReact("talk", "同步没成功，可能是配置或网络在闹别扭。");
+      } finally {
+        sharedSyncInProgress = false;
+      }
+    }
+
+    async function saveSharedSyncSettingsFromForm() {
+      const supabaseUrl = document.querySelector("#syncUrlInput").value.trim().replace(/\/+$/, "");
+      const anonKey = document.querySelector("#syncAnonKeyInput").value.trim();
+      const roomCode = document.querySelector("#syncRoomCodeInput").value.trim();
+
+      if (!supabaseUrl || !anonKey || !roomCode) {
+        state.syncSettings = normalizeSyncSettings({
+          ...state.syncSettings,
+          enabled: false,
+          supabaseUrl,
+          anonKey,
+          roomCode,
+          roomHash: ""
+        });
+        saveSyncSettingsLocal();
+        renderMine();
+        petReact("talk", "同步配置还差一点，三个都填上才能云同步。");
+        return;
+      }
+
+      if (!window.crypto?.subtle) {
+        petReact("talk", "这个浏览器不支持安全加密，同步先别硬上。");
+        return;
+      }
+
+      const roomHash = await hashText(`lulu-life:${roomCode}`);
+      state.syncSettings = normalizeSyncSettings({
+        ...state.syncSettings,
+        enabled: true,
+        supabaseUrl,
+        anonKey,
+        roomCode,
+        roomHash
+      });
+      saveSyncSettingsLocal();
+      renderMine();
+      await syncSharedData(true);
+    }
+
+    function disconnectSharedSync() {
+      const deviceId = state.syncSettings.deviceId || createId();
+      state.syncSettings = {
+        ...defaultSyncSettings,
+        deviceId,
+        lastStatus: "已断开，健康和待办只保存在本机。"
+      };
+      saveSyncSettingsLocal();
+      setSharedSyncStatus("本机模式", "已断开，健康和待办只保存在本机。");
+      renderMine();
+      petReact("talk", "同步断开了。本机记录还在，云端我先不碰。");
+    }
+
+    function setupSharedSyncLifecycle() {
+      window.addEventListener("online", () => {
+        queueSharedSync(300);
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          queueSharedSync(700);
+        }
+      });
     }
 
     function getLedgerCategories(extra = [], includeEntryCategories = false) {
@@ -3351,11 +4605,12 @@
 
     function renderMine() {
       const days = Math.max(1, Math.ceil((Date.now() - state.settings.startedAt) / (24 * 60 * 60 * 1000)));
-      const todoCount = state.todos.length;
+      const todoCount = getLiveTodos().length;
+      const periodCount = getLivePeriodRecords().length;
       const entryCount = state.entries.length;
 
       document.querySelector("#companionText").textContent = `你和噜噜已经互相忍受了 ${days} 天。`;
-      document.querySelector("#dataSummary").textContent = `${todoCount} 条待办，${entryCount} 条账本记录，${state.decisions.length} 次决定。`;
+      document.querySelector("#dataSummary").textContent = `${todoCount} 条待办，${periodCount} 条健康记录，${entryCount} 条账本记录，${state.decisions.length} 次决定。`;
       document.querySelectorAll("[data-personality]").forEach((button) => {
         button.classList.toggle("is-active", button.dataset.personality === state.settings.personality);
       });
@@ -3364,30 +4619,41 @@
       document.querySelector("#petSizeInput").value = state.settings.petSize;
       document.querySelector("#dailyBudgetInput").value = state.settings.dailyBudget;
       document.querySelector("#monthlyBudgetInput").value = state.settings.monthlyBudget;
+      setInputValueIfUnfocused("#syncUrlInput", state.syncSettings.supabaseUrl);
+      setInputValueIfUnfocused("#syncAnonKeyInput", state.syncSettings.anonKey);
+      setInputValueIfUnfocused("#syncRoomCodeInput", state.syncSettings.roomCode);
+      document.querySelector("#syncStatusTitle").textContent = state.syncSettings.enabled ? state.syncStatus : "本机模式";
+      document.querySelector("#syncStatusText").textContent = state.syncSettings.enabled
+        ? state.syncSettings.lastStatus
+        : "填入 Supabase 地址、公开 anon key 和情侣同步码后，就可以开始同步。";
     }
 
     function renderAll() {
       renderHome();
       renderTodos();
       renderLedger();
+      renderHealth();
       renderDecisions();
       renderMine();
     }
 
     function addTodo(text, repeat = "none") {
+      const now = Date.now();
       state.todos.unshift({
         id: createId(),
         text,
         dueDate: state.selectedTodoDate,
         repeat,
         done: false,
-        createdAt: Date.now(),
-        completedAt: null
+        createdAt: now,
+        completedAt: null,
+        updatedAt: now,
+        deletedAt: null
       });
       saveTodos();
       renderAll();
 
-      const selectedActiveCount = state.todos.filter((todo) => getTodoDate(todo) === state.selectedTodoDate && !todo.done).length;
+      const selectedActiveCount = getLiveTodos().filter((todo) => getTodoDate(todo) === state.selectedTodoDate && !todo.done).length;
       if (selectedActiveCount >= 8) {
         petReact("talk", "你这是待办，还是人生副本列表？");
       } else if (repeat !== "none") {
@@ -3411,6 +4677,7 @@
       if (!nextDate) return null;
 
       todo.generatedNextFor = currentDate;
+      todo.updatedAt = Date.now();
       return {
         id: createId(),
         text: todo.text,
@@ -3419,16 +4686,19 @@
         repeatRootId: todo.repeatRootId ?? todo.id,
         done: false,
         createdAt: Date.now(),
-        completedAt: null
+        completedAt: null,
+        updatedAt: Date.now(),
+        deletedAt: null
       };
     }
 
     function toggleTodo(todoId) {
       const todo = state.todos.find((item) => item.id === todoId);
-      if (!todo) return;
+      if (!todo || todo.deletedAt) return;
 
       todo.done = !todo.done;
       todo.completedAt = todo.done ? Date.now() : null;
+      todo.updatedAt = Date.now();
       const nextRepeatTodo = todo.done ? createNextRepeatTodo(todo) : null;
       if (nextRepeatTodo) {
         state.todos.unshift(nextRepeatTodo);
@@ -3437,8 +4707,9 @@
       renderAll();
 
       if (todo.done) {
-        const doneToday = state.todos.filter((item) => item.done && getTodoDate(item) === getISODate()).length;
-        const leftToday = state.todos.filter((item) => !item.done && getTodoDate(item) === getISODate()).length;
+        const todos = getLiveTodos();
+        const doneToday = todos.filter((item) => item.done && getTodoDate(item) === getISODate()).length;
+        const leftToday = todos.filter((item) => !item.done && getTodoDate(item) === getISODate()).length;
         const clearedToday = getTodoDate(todo) === getISODate() && doneToday > 0 && leftToday === 0;
         const shouldCelebrate = clearedToday || (doneToday > 0 && doneToday % 3 === 0);
         const line = shouldCelebrate
@@ -3456,7 +4727,10 @@
     }
 
     function deleteTodo(todoId) {
-      state.todos = state.todos.filter((todo) => todo.id !== todoId);
+      const todo = state.todos.find((item) => item.id === todoId);
+      if (!todo) return;
+      todo.deletedAt = Date.now();
+      todo.updatedAt = todo.deletedAt;
       saveTodos();
       renderAll();
       petReact("talk", pickOne(petLines.todoDeleted));
@@ -3931,6 +5205,46 @@
       });
     }
 
+    function setupHealth() {
+      document.querySelector("#periodStartTodayButton").addEventListener("click", startPeriodToday);
+      document.querySelector("#periodEndTodayButton").addEventListener("click", endPeriodToday);
+      document.querySelector("#periodForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        savePeriodFromForm();
+      });
+      document.querySelector("#periodCancelEditButton").addEventListener("click", () => {
+        state.editingPeriodId = null;
+        renderAll();
+        petReact("talk", "取消编辑。时间线先保持原样。");
+      });
+      document.querySelector("#periodLogDateInput").addEventListener("change", (event) => {
+        if (!event.target.value) return;
+        state.selectedPeriodDate = event.target.value;
+        renderHealth();
+      });
+      document.querySelector("#periodSymptomChips").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-period-symptom]");
+        if (!button) return;
+        button.classList.toggle("is-active");
+      });
+      document.querySelector("#periodLogForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        savePeriodDailyLog();
+      });
+      document.querySelector("#periodHistoryList").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-action]");
+        const recordId = event.target.closest("[data-period-id]")?.dataset.periodId;
+        if (!button || !recordId) return;
+
+        if (button.dataset.action === "edit-period") {
+          editPeriodRecord(recordId);
+        }
+        if (button.dataset.action === "delete-period") {
+          deletePeriodRecord(recordId);
+        }
+      });
+    }
+
     function setupLedger() {
       document.querySelectorAll("[data-ledger-kind]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -4133,6 +5447,16 @@
         event.target.value = "";
       });
 
+      document.querySelector("#syncSaveButton").addEventListener("click", () => {
+        saveSharedSyncSettingsFromForm();
+      });
+
+      document.querySelector("#syncNowButton").addEventListener("click", () => {
+        syncSharedData(true);
+      });
+
+      document.querySelector("#syncDisconnectButton").addEventListener("click", disconnectSharedSync);
+
       document.querySelector("#resetPetButton").addEventListener("click", () => {
         setPetPosition(getDefaultPetPosition());
         savePetPosition();
@@ -4140,13 +5464,27 @@
       });
 
       document.querySelector("#clearDataButton").addEventListener("click", () => {
-        const confirmed = window.confirm("确定清空待办、账本和决定历史吗？");
+        const confirmed = window.confirm("确定清空待办、健康记录、账本和决定历史吗？");
         if (!confirmed) return;
 
-        state.todos = [];
+        if (isSharedSyncReady()) {
+          const deletedAt = Date.now();
+          state.todos.forEach((todo) => {
+            todo.deletedAt = deletedAt;
+            todo.updatedAt = deletedAt;
+          });
+          state.periodRecords.forEach((record) => {
+            record.deletedAt = deletedAt;
+            record.updatedAt = deletedAt;
+          });
+        } else {
+          state.todos = [];
+          state.periodRecords = [];
+        }
         state.entries = [];
         state.decisions = [];
         saveTodos();
+        savePeriodRecords();
         saveEntries();
         saveDecisions();
         document.querySelector("#decisionResult").classList.remove("is-visible");
@@ -4181,13 +5519,16 @@
       setupPetInteractions();
       setupNavigation();
       setupTodo();
+      setupHealth();
       setupLedger();
       setupDecider();
       setupMine();
       setupPWA();
       setupResizeHandling();
+      setupSharedSyncLifecycle();
       renderAll();
       startAutoTalk();
+      queueSharedSync(1400);
 
       if (wasAwayMoreThanThreeDays()) {
         setPetImage("sad");
