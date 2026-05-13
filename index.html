@@ -2304,7 +2304,7 @@
           <div class="sync-form">
             <div class="sync-status-card">
               <p class="sync-status-title" id="syncStatusTitle">本机模式</p>
-              <p class="sync-status-note" id="syncStatusText">填入 Supabase 地址、公开 anon key 和情侣同步码后，就可以开始同步。</p>
+              <p class="sync-status-note" id="syncStatusText">填入 Supabase 地址、公开 publishable/anon key 和情侣同步码后，就可以开始同步。</p>
             </div>
             <div class="sync-form-grid">
               <label class="health-field full-row" for="syncUrlInput">
@@ -2312,8 +2312,8 @@
                 <input class="input" id="syncUrlInput" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
               </label>
               <label class="health-field full-row" for="syncAnonKeyInput">
-                <span>Supabase anon key</span>
-                <input class="input" id="syncAnonKeyInput" type="password" placeholder="公开 anon key" autocomplete="off" />
+                <span>Supabase publishable / anon key</span>
+                <input class="input" id="syncAnonKeyInput" type="password" placeholder="sb_publishable_... 或 legacy anon key" autocomplete="off" />
               </label>
               <label class="health-field full-row" for="syncRoomCodeInput">
                 <span>情侣同步码</span>
@@ -4155,11 +4155,14 @@
     }
 
     function getSupabaseHeaders() {
-      return {
+      const headers = {
         apikey: state.syncSettings.anonKey,
-        Authorization: `Bearer ${state.syncSettings.anonKey}`,
         "Content-Type": "application/json"
       };
+      if (state.syncSettings.anonKey.startsWith("eyJ")) {
+        headers.Authorization = `Bearer ${state.syncSettings.anonKey}`;
+      }
+      return headers;
     }
 
     async function fetchRemoteSharedPayload() {
@@ -4221,7 +4224,7 @@
         setSharedSyncStatus("已同步", `上次同步：${formatTime(state.syncSettings.lastSyncedAt)}`);
         if (shouldTalk) petReact("talk", pickOne(petLines.sync));
       } catch (error) {
-        setSharedSyncStatus("同步失败", "请检查 Supabase 地址、anon key、同步表或情侣同步码。");
+        setSharedSyncStatus("同步失败", "请检查 Supabase 地址、publishable/anon key、同步表或情侣同步码。");
         if (shouldTalk) petReact("talk", "同步没成功，可能是配置或网络在闹别扭。");
       } finally {
         sharedSyncInProgress = false;
@@ -4625,7 +4628,7 @@
       document.querySelector("#syncStatusTitle").textContent = state.syncSettings.enabled ? state.syncStatus : "本机模式";
       document.querySelector("#syncStatusText").textContent = state.syncSettings.enabled
         ? state.syncSettings.lastStatus
-        : "填入 Supabase 地址、公开 anon key 和情侣同步码后，就可以开始同步。";
+        : "填入 Supabase 地址、公开 publishable/anon key 和情侣同步码后，就可以开始同步。";
     }
 
     function renderAll() {
