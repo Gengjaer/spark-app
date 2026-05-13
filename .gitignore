@@ -1,0 +1,7 @@
+﻿# Local scratch files
+/tmp/
+tmp/
+
+# OS noise
+.DS_Store
+Thumbs.db

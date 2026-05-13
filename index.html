@@ -1,0 +1,4205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f8f8fb" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Spark" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="images/app-icon-180.png" />
+  <title>Spark</title>
+  <script>
+    (() => {
+      try {
+        const settings = JSON.parse(localStorage.getItem("spark:settings") || "{}");
+        document.documentElement.dataset.theme = settings.theme === "dark" ? "dark" : "light";
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg-start: #f8f8fb;
+      --bg-mid: #fff7f0;
+      --bg-end: #ffe0c9;
+      --bg-glow: rgba(255, 255, 255, 0.9);
+      --bg-glow-warm: rgba(255, 130, 82, 0.18);
+      --surface: rgba(255, 255, 255, 0.72);
+      --surface-strong: rgba(255, 255, 255, 0.92);
+      --surface-soft: rgba(255, 255, 255, 0.56);
+      --field: rgba(255, 255, 255, 0.76);
+      --field-strong: rgba(255, 255, 255, 0.9);
+      --bubble-bg: rgba(255, 255, 255, 0.94);
+      --nav-bg: rgba(248, 248, 250, 0.84);
+      --text: #1d1d1f;
+      --text-soft: #53443d;
+      --muted: #6e6e73;
+      --warm: #ff8a5b;
+      --warm-deep: #ff5a1f;
+      --rose: #ff6f91;
+      --green: #34c759;
+      --danger: #c84f3a;
+      --line: rgba(60, 60, 67, 0.12);
+      --line-strong: rgba(60, 60, 67, 0.18);
+      --wheel-text: rgba(29, 29, 31, 0.9);
+      --wheel-label-stroke: rgba(255, 255, 255, 0.5);
+      --shadow: 0 18px 48px rgba(60, 60, 67, 0.12);
+      --glass-blur: saturate(180%) blur(24px);
+      --nav-height: 82px;
+      --pet-size: 124px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg-start: #111113;
+      --bg-mid: #191715;
+      --bg-end: #251b18;
+      --bg-glow: rgba(255, 145, 91, 0.1);
+      --bg-glow-warm: rgba(255, 111, 73, 0.18);
+      --surface: rgba(31, 31, 33, 0.72);
+      --surface-strong: rgba(43, 43, 46, 0.9);
+      --surface-soft: rgba(255, 255, 255, 0.08);
+      --field: rgba(31, 31, 33, 0.8);
+      --field-strong: rgba(47, 47, 50, 0.92);
+      --bubble-bg: rgba(38, 38, 41, 0.96);
+      --nav-bg: rgba(22, 22, 24, 0.84);
+      --text: #f5f5f7;
+      --text-soft: #ded3cc;
+      --muted: #a1a1aa;
+      --warm: #ff9a70;
+      --warm-deep: #ff7a45;
+      --rose: #ff7f9e;
+      --green: #43d17f;
+      --danger: #ff7f6f;
+      --line: rgba(255, 255, 255, 0.12);
+      --line-strong: rgba(255, 255, 255, 0.18);
+      --wheel-text: rgba(245, 245, 247, 0.92);
+      --wheel-label-stroke: rgba(0, 0, 0, 0.34);
+      --shadow: 0 24px 52px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--bg-end);
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 14%, var(--bg-glow), transparent 28%),
+        radial-gradient(circle at 88% 4%, var(--bg-glow-warm), transparent 26%),
+        linear-gradient(155deg, var(--bg-start) 0%, var(--bg-mid) 52%, var(--bg-end) 100%);
+      overflow-x: hidden;
+      transition: background 220ms ease, color 180ms ease;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    button:disabled {
+      opacity: 1;
+    }
+
+    .app-shell {
+      width: min(100%, 460px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 18px 18px calc(var(--nav-height) + 24px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 6px 2px 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(145deg, var(--warm), var(--rose));
+      box-shadow: 0 12px 24px rgba(232, 93, 42, 0.28);
+      flex: 0 0 auto;
+    }
+
+    .brand-mark svg {
+      width: 23px;
+      height: 23px;
+      fill: currentColor;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 1.55rem;
+      line-height: 1;
+      letter-spacing: 0;
+      font-weight: 800;
+    }
+
+    .today {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .theme-toggle {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: 0 8px 22px rgba(60, 60, 67, 0.08);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      backdrop-filter: var(--glass-blur);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-toggle-icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .theme-icon-sun {
+      display: none;
+    }
+
+    html[data-theme="dark"] .theme-icon-sun {
+      display: block;
+    }
+
+    html[data-theme="dark"] .theme-icon-moon {
+      display: none;
+    }
+
+    .main-view {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      padding: 12px 0 20px;
+    }
+
+    .main-view.is-active {
+      display: flex;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+      box-shadow: var(--shadow);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .hero-panel {
+      min-height: 220px;
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--warm-deep);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .page-title,
+    .hero-title {
+      margin: 0;
+      line-height: 1.08;
+      letter-spacing: 0;
+      font-weight: 900;
+    }
+
+    .hero-title {
+      max-width: 11em;
+      font-size: clamp(2rem, 10vw, 3.25rem);
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+    }
+
+    .hero-copy,
+    .page-copy {
+      margin: 14px 0 0;
+      color: var(--text-soft);
+      font-size: 0.98rem;
+      line-height: 1.65;
+      font-weight: 650;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 22px 20px 0;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 880;
+    }
+
+    .section-note {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .focus-panel {
+      padding: 20px;
+    }
+
+    .focus-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .focus-title {
+      margin: 0;
+      font-size: 1.08rem;
+      font-weight: 880;
+    }
+
+    .focus-text {
+      margin: 10px 0 0;
+      color: var(--text-soft);
+      line-height: 1.58;
+      font-weight: 700;
+    }
+
+    .focus-meta {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .signal-list {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .signal-chip {
+      min-height: 50px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+    }
+
+    .signal-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 760;
+    }
+
+    .signal-value {
+      margin: 5px 0 0;
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .stat-card {
+      min-height: 92px;
+      padding: 15px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .stat-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 750;
+    }
+
+    .stat-value {
+      margin: 10px 0 0;
+      color: var(--text);
+      font-size: 1.35rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .stat-value.small {
+      font-size: 1.08rem;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .quick-tile {
+      min-height: 116px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: inherit;
+      background: var(--surface-soft);
+      backdrop-filter: var(--glass-blur);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .quick-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--warm-deep);
+      background: rgba(255, 122, 69, 0.12);
+    }
+
+    .quick-icon svg,
+    .field-icon {
+      width: 19px;
+      height: 19px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .quick-title {
+      display: block;
+      margin: 18px 0 0;
+      font-size: 1rem;
+      font-weight: 850;
+    }
+
+    .quick-note {
+      display: block;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .form-panel {
+      padding: 18px;
+    }
+
+    .todo-scope-panel {
+      padding: 14px;
+    }
+
+    .todo-scope-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .todo-scope-btn {
+      min-height: 64px;
+      padding: 10px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--surface-soft);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .todo-scope-btn.is-active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(145deg, var(--warm), var(--rose));
+      box-shadow: 0 12px 24px rgba(232, 93, 42, 0.18);
+    }
+
+    .todo-scope-label {
+      font-size: 0.78rem;
+      font-weight: 820;
+    }
+
+    .todo-scope-count {
+      color: var(--text);
+      font-size: 1.22rem;
+      line-height: 1;
+      font-weight: 920;
+    }
+
+    .todo-scope-btn.is-active .todo-scope-count {
+      color: #fff;
+    }
+
+    .date-panel {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .date-center {
+      min-width: 0;
+      text-align: center;
+    }
+
+    .date-label {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      font-weight: 880;
+    }
+
+    .date-input {
+      width: 100%;
+      max-width: 178px;
+      height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 0 10px;
+      color: var(--muted);
+      background: var(--field);
+      font-size: 0.82rem;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .date-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .preview-grid {
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .preview-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+    }
+
+    .preview-card.is-alert {
+      border-color: rgba(232, 93, 42, 0.28);
+      background: rgba(255, 122, 69, 0.1);
+    }
+
+    .preview-title {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 860;
+    }
+
+    .preview-list {
+      margin: 9px 0 0;
+      padding: 0;
+      color: var(--text-soft);
+      list-style: none;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .preview-list li {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .todo-options-row {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .mini-field {
+      width: min(100%, 188px);
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 760;
+    }
+
+    .mini-field .select {
+      height: 42px;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      color: var(--text);
+      background: var(--field);
+      outline: none;
+      font-weight: 680;
+    }
+
+    .input,
+    .select {
+      height: 48px;
+      padding: 0 14px;
+    }
+
+    .textarea {
+      min-height: 150px;
+      padding: 14px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: rgba(232, 93, 42, 0.62);
+      box-shadow: 0 0 0 3px rgba(232, 93, 42, 0.12);
+    }
+
+    .primary-btn,
+    .ghost-btn,
+    .icon-btn,
+    .danger-btn {
+      min-height: 44px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 820;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .primary-btn {
+      padding: 0 16px;
+      color: #fff;
+      background: linear-gradient(145deg, var(--warm), var(--rose));
+      box-shadow: 0 12px 24px rgba(232, 93, 42, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .ghost-btn,
+    .danger-btn {
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--field);
+    }
+
+    .danger-btn {
+      color: var(--danger);
+    }
+
+    .setting-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hidden-file {
+      width: 1px;
+      height: 1px;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      min-height: 40px;
+      color: var(--muted);
+      background: transparent;
+      flex: 0 0 auto;
+    }
+
+    .btn-icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .segmented {
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      display: grid;
+      grid-template-columns: repeat(var(--segments, 3), 1fr);
+      gap: 4px;
+    }
+
+    .segment-btn {
+      min-height: 38px;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .segment-btn.is-active {
+      color: #fff;
+      background: var(--warm-deep);
+      box-shadow: 0 8px 18px rgba(232, 93, 42, 0.18);
+    }
+
+    .list-panel {
+      overflow: hidden;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .empty-state {
+      padding: 28px 20px;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .todo-item,
+    .ledger-item,
+    .decision-item {
+      padding: 15px 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .todo-check {
+      width: 26px;
+      height: 26px;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--field);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .todo-check svg {
+      width: 17px;
+      height: 17px;
+      stroke: #fff;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      opacity: 0;
+    }
+
+    .todo-item.is-done .todo-check {
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .todo-item.is-done .todo-check svg {
+      opacity: 1;
+    }
+
+    .item-body {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .item-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.35;
+      font-weight: 820;
+      word-break: break-word;
+    }
+
+    .todo-item.is-done .item-title {
+      color: color-mix(in srgb, var(--text) 48%, transparent);
+      text-decoration: line-through;
+    }
+
+    .item-meta {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 650;
+    }
+
+    .ledger-amount {
+      margin-left: auto;
+      font-size: 1rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .ledger-amount.expense {
+      color: #d8552d;
+    }
+
+    .ledger-amount.income {
+      color: var(--green);
+    }
+
+    .entry-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 0 0 auto;
+    }
+
+    .ledger-edit-item {
+      align-items: stretch;
+    }
+
+    .ledger-edit-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .ledger-edit-grid .full-row,
+    .ledger-edit-actions {
+      grid-column: 1 / -1;
+    }
+
+    .ledger-edit-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .result-card {
+      padding: 22px 20px;
+      display: none;
+    }
+
+    .wheel-panel {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .preset-btn {
+      min-height: 42px;
+      border-radius: 8px;
+      color: var(--text);
+      background: var(--field);
+      border: 1px solid var(--line);
+      font-weight: 820;
+      cursor: pointer;
+    }
+
+    .wheel-shell {
+      width: min(74vw, 280px);
+      aspect-ratio: 1;
+      margin: 2px auto 0;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .wheel-pointer {
+      width: 0;
+      height: 0;
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      z-index: 2;
+      transform: translateX(-50%);
+      border-right: 12px solid transparent;
+      border-left: 12px solid transparent;
+      border-top: 22px solid var(--warm-deep);
+      filter: drop-shadow(0 5px 8px rgba(126, 68, 39, 0.18));
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border: 10px solid var(--field-strong);
+      border-radius: 50%;
+      background: var(--field);
+      box-shadow:
+        inset 0 0 0 1px var(--line),
+        var(--shadow);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      transform: rotate(var(--wheel-rotation, 0deg));
+      transition: transform 1800ms cubic-bezier(0.17, 0.84, 0.28, 1);
+    }
+
+    .wheel-art {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+    }
+
+    .wheel-art text {
+      fill: var(--wheel-text);
+      font-weight: 900;
+      paint-order: stroke;
+      stroke: var(--wheel-label-stroke);
+      stroke-width: 0.8px;
+      stroke-linejoin: round;
+    }
+
+    .wheel-center {
+      width: 42%;
+      height: 42%;
+      padding: 12px;
+      border-radius: 50%;
+      color: var(--text);
+      background: var(--field-strong);
+      display: grid;
+      place-items: center;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      font-size: 0.86rem;
+      line-height: 1.35;
+      font-weight: 880;
+      transform: rotate(calc(var(--wheel-rotation, 0deg) * -1));
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .custom-editor {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      overflow: hidden;
+    }
+
+    .custom-editor summary {
+      min-height: 46px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text);
+      font-weight: 860;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .custom-editor summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .custom-editor summary::after {
+      content: "+";
+      color: var(--warm-deep);
+      font-size: 1.25rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .custom-editor[open] summary::after {
+      content: "-";
+    }
+
+    .compact-editor {
+      box-shadow: none;
+    }
+
+    .editor-form {
+      padding: 0 12px 12px;
+    }
+
+    .chip-list {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .category-chip {
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      background: var(--surface-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .chip-remove {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      color: var(--muted);
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .bill-panel {
+      padding-bottom: 18px;
+    }
+
+    .bill-controls {
+      padding: 16px 18px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bill-input-row {
+      display: flex;
+      justify-content: center;
+    }
+
+    .category-list {
+      padding: 4px 18px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .category-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .category-name {
+      margin: 0 0 7px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 820;
+    }
+
+    .category-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      overflow: hidden;
+    }
+
+    .category-bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--warm), var(--rose));
+    }
+
+    .category-amount {
+      color: var(--warm-deep);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .budget-panel {
+      padding: 18px;
+    }
+
+    .budget-lines {
+      margin-top: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .budget-line-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 820;
+    }
+
+    .progress-track {
+      height: 12px;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #7bd389, #ffd166, var(--warm), var(--rose));
+      transition: width 180ms ease;
+    }
+
+    .progress-fill.is-over {
+      background: linear-gradient(90deg, var(--warm), var(--rose));
+    }
+
+    .result-card.is-visible {
+      display: block;
+    }
+
+    .result-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .result-choice {
+      margin: 10px 0 0;
+      font-size: clamp(1.65rem, 8vw, 2.5rem);
+      line-height: 1.1;
+      font-weight: 950;
+      word-break: break-word;
+    }
+
+    .result-comment {
+      margin: 14px 0 0;
+      color: var(--text-soft);
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .settings-list {
+      padding: 6px 18px 18px;
+    }
+
+    .setting-row {
+      min-height: 62px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .setting-row:first-child {
+      border-top: 0;
+    }
+
+    .setting-title {
+      margin: 0;
+      font-weight: 830;
+    }
+
+    .setting-note {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.35;
+      font-weight: 650;
+    }
+
+    .switch {
+      width: 54px;
+      height: 30px;
+      padding: 3px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .switch input {
+      width: 1px;
+      height: 1px;
+      position: absolute;
+      opacity: 0;
+    }
+
+    .switch-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(87, 49, 31, 0.18);
+      transition: transform 160ms ease;
+    }
+
+    .switch:has(input:checked) {
+      background: var(--warm-deep);
+    }
+
+    .switch:has(input:checked) .switch-dot {
+      transform: translateX(24px);
+    }
+
+    .range {
+      width: 128px;
+      accent-color: var(--warm-deep);
+      flex: 0 0 auto;
+    }
+
+    .small-input {
+      width: 98px;
+      height: 40px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 0 10px;
+      color: var(--text);
+      background: var(--field);
+      font-weight: 750;
+    }
+
+    .desk-pet {
+      width: var(--pet-size);
+      height: var(--pet-size);
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 40;
+      transform: translate3d(var(--pet-x, 0px), var(--pet-y, 0px), 0);
+      touch-action: none;
+      user-select: none;
+      will-change: transform;
+    }
+
+    .desk-pet.is-ready {
+      transition: transform 160ms ease;
+    }
+
+    .desk-pet.is-dragging {
+      transition: none;
+      z-index: 60;
+    }
+
+    .pet-button {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border-radius: 8px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: grab;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .desk-pet.is-dragging .pet-button {
+      cursor: grabbing;
+    }
+
+    .pet-button:focus-visible {
+      outline: 3px solid rgba(232, 93, 42, 0.45);
+      outline-offset: 4px;
+    }
+
+    .pet-image {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      pointer-events: none;
+      filter: drop-shadow(0 14px 24px rgba(202, 85, 42, 0.18));
+    }
+
+    .pet-bubble {
+      min-width: 122px;
+      max-width: min(226px, calc(100vw - 28px));
+      padding: 10px 12px;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% - 6px);
+      transform: translateX(-50%) translateY(8px) scale(0.98);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      background: var(--bubble-bg);
+      box-shadow: var(--shadow);
+      font-size: 0.9rem;
+      line-height: 1.42;
+      font-weight: 760;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .pet-bubble::after {
+      content: "";
+      width: 12px;
+      height: 12px;
+      position: absolute;
+      left: 50%;
+      bottom: -6px;
+      transform: translateX(-50%) rotate(45deg);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--bubble-bg);
+    }
+
+    .desk-pet.is-talking .pet-bubble {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    .desk-pet.is-near-left .pet-bubble {
+      left: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+
+    .desk-pet.is-near-left.is-talking .pet-bubble {
+      transform: translateY(0) scale(1);
+    }
+
+    .desk-pet.is-near-left .pet-bubble::after {
+      left: 38px;
+    }
+
+    .desk-pet.is-near-right .pet-bubble {
+      right: 0;
+      left: auto;
+      transform: translateY(8px) scale(0.98);
+    }
+
+    .desk-pet.is-near-right.is-talking .pet-bubble {
+      transform: translateY(0) scale(1);
+    }
+
+    .desk-pet.is-near-right .pet-bubble::after {
+      right: 38px;
+      left: auto;
+      transform: rotate(45deg);
+    }
+
+    .desk-pet.is-near-top .pet-bubble {
+      top: calc(100% - 4px);
+      bottom: auto;
+    }
+
+    .desk-pet.is-near-top .pet-bubble::after {
+      top: -6px;
+      bottom: auto;
+      border: 0;
+      border-left: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+    }
+
+    .bottom-nav {
+      width: min(100%, 460px);
+      height: var(--nav-height);
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      border-top: 1px solid var(--line);
+      background: var(--nav-bg);
+      backdrop-filter: var(--glass-blur);
+      box-shadow: 0 -16px 36px rgba(0, 0, 0, 0.08);
+      z-index: 30;
+    }
+
+    .nav-item {
+      min-width: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-item[aria-current="page"] {
+      color: var(--warm-deep);
+      background: rgba(255, 122, 69, 0.13);
+    }
+
+    .nav-icon {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .nav-label {
+      font-size: 0.72rem;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    @media (max-width: 360px) {
+      .app-shell {
+        padding-right: 14px;
+        padding-left: 14px;
+      }
+
+      .hero-panel {
+        padding: 24px 20px;
+      }
+
+      .quick-grid,
+      .stats-grid {
+        gap: 10px;
+      }
+
+      .quick-tile {
+        padding: 15px;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+
+      .primary-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar" aria-label="应用顶部">
+      <div class="brand" aria-label="Spark">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2.5 14.8 9l6.7 3-6.7 3L12 21.5 9.2 15l-6.7-3 6.7-3L12 2.5Z" />
+          </svg>
+        </div>
+        <h1 class="brand-title">Spark</h1>
+      </div>
+      <div class="top-actions">
+        <p class="today" id="todayText">今天</p>
+        <button class="theme-toggle" id="themeToggleButton" type="button" aria-label="切换深色模式" aria-pressed="false">
+          <svg class="theme-toggle-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 14.2A7.7 7.7 0 0 1 9.8 3 8.4 8.4 0 1 0 21 14.2Z" />
+          </svg>
+          <svg class="theme-toggle-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="main-view is-active" id="homeView" data-view="home" aria-labelledby="homeTitle">
+        <div class="hero-panel panel">
+          <p class="eyebrow">今日火花</p>
+          <h2 class="hero-title" id="homeTitle">先把今天过成自己的节奏</h2>
+          <p class="hero-copy" id="homeInsight">噜噜正在观察你的今日状态。</p>
+        </div>
+
+        <div class="stats-grid" aria-label="今日摘要">
+          <div class="stat-card">
+            <p class="stat-label">待办剩余</p>
+            <p class="stat-value" id="homeTodoLeft">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">今日完成</p>
+            <p class="stat-value" id="homeTodoDone">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">今日支出</p>
+            <p class="stat-value small" id="homeTodaySpend">¥0</p>
+          </div>
+        </div>
+
+        <section class="focus-panel panel" aria-labelledby="homeFocusTitle">
+          <div class="focus-header">
+            <div>
+              <p class="eyebrow" style="margin-bottom: 8px;">噜噜建议</p>
+              <h3 class="focus-title" id="homeFocusTitle">先挑一件最小的事</h3>
+            </div>
+            <button class="ghost-btn" id="homeFocusButton" type="button" data-go="todo">去处理</button>
+          </div>
+          <p class="focus-text" id="homeFocusText">今天还没形成压力，很适合轻轻启动。</p>
+          <p class="focus-meta" id="homeFocusMeta">Spark 会根据待办、预算和账单更新建议。</p>
+          <div class="signal-list" id="homeSignals"></div>
+        </section>
+
+        <div class="quick-grid" aria-label="快捷入口">
+          <button class="quick-tile" type="button" data-go="todo">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M8 6h13" />
+                <path d="M8 12h13" />
+                <path d="M8 18h13" />
+                <path d="m3 6 1.2 1.2L6.5 5" />
+              </svg>
+            </span>
+            <span>
+              <span class="quick-title">添个待办</span>
+              <span class="quick-note">把脑子里的小事放下来。</span>
+            </span>
+          </button>
+
+          <button class="quick-tile" type="button" data-go="ledger">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 3h12v18H6z" />
+                <path d="M9 7h6" />
+                <path d="M9 11h6" />
+                <path d="M9 15h2" />
+              </svg>
+            </span>
+            <span>
+              <span class="quick-title">记一笔</span>
+              <span class="quick-note">看清钱去哪儿玩了。</span>
+            </span>
+          </button>
+
+          <button class="quick-tile" type="button" data-go="decider">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="6" />
+                <path d="m12 12 3-3" />
+                <path d="M12 3v3" />
+              </svg>
+            </span>
+            <span>
+              <span class="quick-title">帮我决定</span>
+              <span class="quick-note">选择困难交给一点运气。</span>
+            </span>
+          </button>
+
+          <button class="quick-tile" type="button" data-go="mine">
+            <span class="quick-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
+              </svg>
+            </span>
+            <span>
+              <span class="quick-title">调教噜噜</span>
+              <span class="quick-note">大小、毒舌、安静模式。</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="main-view" id="todoView" data-view="todo" aria-labelledby="todoTitle">
+        <div class="hero-panel panel">
+          <p class="eyebrow">待办</p>
+          <h2 class="page-title" id="todoTitle">今天先抓住几件小事</h2>
+          <p class="page-copy">不用列成人生副本，先写一个能动起来的。</p>
+        </div>
+
+        <section class="todo-scope-panel panel" aria-label="待办智能视图">
+          <div class="todo-scope-grid">
+            <button class="todo-scope-btn is-active" type="button" data-todo-scope="today">
+              <span class="todo-scope-label">今天</span>
+              <span class="todo-scope-count" id="todoScopeToday">0</span>
+            </button>
+            <button class="todo-scope-btn" type="button" data-todo-scope="tomorrow">
+              <span class="todo-scope-label">明天</span>
+              <span class="todo-scope-count" id="todoScopeTomorrow">0</span>
+            </button>
+            <button class="todo-scope-btn" type="button" data-todo-scope="overdue">
+              <span class="todo-scope-label">逾期</span>
+              <span class="todo-scope-count" id="todoScopeOverdue">0</span>
+            </button>
+            <button class="todo-scope-btn" type="button" data-todo-scope="week">
+              <span class="todo-scope-label">本周</span>
+              <span class="todo-scope-count" id="todoScopeWeek">0</span>
+            </button>
+            <button class="todo-scope-btn" type="button" data-todo-scope="future">
+              <span class="todo-scope-label">未来</span>
+              <span class="todo-scope-count" id="todoScopeFuture">0</span>
+            </button>
+            <button class="todo-scope-btn" type="button" data-todo-scope="done">
+              <span class="todo-scope-label">已完成</span>
+              <span class="todo-scope-count" id="todoScopeDone">0</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="date-panel panel" aria-label="待办日期">
+          <button class="icon-btn" type="button" data-todo-date-step="-1" aria-label="前一天">
+            <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <div class="date-center">
+            <p class="date-label" id="todoDateLabel">今天</p>
+            <input class="date-input" id="todoDateInput" type="date" />
+          </div>
+          <button class="icon-btn" type="button" data-todo-date-step="1" aria-label="后一天">
+            <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+          <div class="date-actions">
+            <button class="ghost-btn" id="todoTodayButton" type="button">回到今天</button>
+          </div>
+        </section>
+
+        <form class="form-panel panel" id="todoForm">
+          <div class="form-row">
+            <input class="input" id="todoInput" type="text" maxlength="60" placeholder="比如：把水杯洗了" autocomplete="off" />
+            <button class="primary-btn" type="submit">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+              </svg>
+              添加
+            </button>
+          </div>
+          <div class="todo-options-row">
+            <label class="mini-field" for="todoRepeatInput">
+              <span>重复</span>
+              <select class="select" id="todoRepeatInput">
+                <option value="none">不重复</option>
+                <option value="daily">每天</option>
+                <option value="weekly">每周</option>
+                <option value="monthly">每月</option>
+              </select>
+            </label>
+          </div>
+          <p class="section-note" id="todoFormHint" style="margin: 12px 0 0;">会添加到今天。</p>
+        </form>
+
+        <div class="segmented" style="--segments: 3;" aria-label="待办筛选">
+          <button class="segment-btn is-active" type="button" data-todo-filter="all">全部</button>
+          <button class="segment-btn" type="button" data-todo-filter="active">未完成</button>
+          <button class="segment-btn" type="button" data-todo-filter="done">已完成</button>
+        </div>
+
+        <section class="panel" aria-labelledby="todoAssistTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="todoAssistTitle">噜噜巡逻</h3>
+              <p class="section-note">逾期和明日预览会在这里冒头。</p>
+            </div>
+          </div>
+          <div class="preview-grid" id="todoAssistGrid"></div>
+        </section>
+
+        <section class="list-panel panel" aria-labelledby="todoListTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="todoListTitle">任务清单</h3>
+              <p class="section-note" id="todoSummary">噜噜在旁边盯着。</p>
+            </div>
+          </div>
+          <div class="list" id="todoList"></div>
+        </section>
+      </section>
+
+      <section class="main-view" id="ledgerView" data-view="ledger" aria-labelledby="ledgerTitle">
+        <div class="hero-panel panel">
+          <p class="eyebrow">记账</p>
+          <h2 class="page-title" id="ledgerTitle">钱不是没了，是出去社交了</h2>
+          <p class="page-copy">轻量记一笔就好，Spark 不做会计考试。</p>
+        </div>
+
+        <form class="form-panel panel" id="ledgerForm">
+          <div class="segmented" style="--segments: 2;" aria-label="收支类型">
+            <button class="segment-btn is-active" type="button" data-ledger-kind="expense">支出</button>
+            <button class="segment-btn" type="button" data-ledger-kind="income">收入</button>
+          </div>
+          <div class="form-row" style="margin-top: 12px;">
+            <input class="input" id="ledgerAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="金额" />
+            <select class="select" id="ledgerCategory"></select>
+          </div>
+          <div class="form-row" style="margin-top: 10px;">
+            <input class="input" id="ledgerNote" type="text" maxlength="36" placeholder="备注，可不填" autocomplete="off" />
+            <button class="primary-btn" type="submit">记一笔</button>
+          </div>
+          <details class="custom-editor compact-editor" id="ledgerCategoryEditor" style="margin-top: 12px;">
+            <summary>管理记账分类</summary>
+            <div class="editor-form">
+              <div class="form-row">
+                <input class="input" id="ledgerCategoryInput" type="text" maxlength="10" placeholder="比如：宠物、旅行、房租" autocomplete="off" />
+                <button class="ghost-btn" id="addLedgerCategoryButton" type="button">添加</button>
+              </div>
+              <div class="chip-list" id="ledgerCategoryChips" aria-label="记账分类"></div>
+            </div>
+          </details>
+        </form>
+
+        <div class="stats-grid" aria-label="账本摘要">
+          <div class="stat-card">
+            <p class="stat-label">今日支出</p>
+            <p class="stat-value small" id="ledgerTodaySpend">¥0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">本周支出</p>
+            <p class="stat-value small" id="ledgerWeekSpend">¥0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">今日结余</p>
+            <p class="stat-value small" id="ledgerTodayBalance">¥0</p>
+          </div>
+        </div>
+
+        <section class="budget-panel panel" aria-labelledby="budgetTitle">
+          <div class="focus-header">
+            <div>
+              <h3 class="section-title" id="budgetTitle">预算雷达</h3>
+              <p class="section-note" id="budgetUsedText">还没有预算压力。</p>
+            </div>
+            <button class="ghost-btn" type="button" data-go="mine">调整</button>
+          </div>
+          <div class="budget-lines">
+            <div class="budget-line">
+              <div class="budget-line-head">
+                <span>今日</span>
+                <span id="budgetDailyText">未设置</span>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="budgetProgressBar"></div>
+              </div>
+            </div>
+            <div class="budget-line">
+              <div class="budget-line-head">
+                <span>本月</span>
+                <span id="monthBudgetText">未设置</span>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="monthBudgetProgressBar"></div>
+              </div>
+            </div>
+          </div>
+          <p class="focus-meta" id="budgetMoodText">噜噜先帮钱包站岗。</p>
+        </section>
+
+        <section class="panel bill-panel" aria-labelledby="billTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="billTitle">账单统计</h3>
+              <p class="section-note" id="billPeriodTitle">本月钱都去哪儿了。</p>
+            </div>
+          </div>
+          <div class="bill-controls">
+            <div class="segmented" style="--segments: 2;" aria-label="账单周期">
+              <button class="segment-btn is-active" type="button" data-ledger-period="month">月账单</button>
+              <button class="segment-btn" type="button" data-ledger-period="year">年账单</button>
+            </div>
+            <div class="bill-input-row">
+              <input class="date-input" id="ledgerMonthInput" type="month" />
+              <input class="small-input" id="ledgerYearInput" type="number" min="2000" max="2100" step="1" hidden />
+            </div>
+            <div class="stats-grid" aria-label="选中周期统计">
+              <div class="stat-card">
+                <p class="stat-label">支出</p>
+                <p class="stat-value small" id="billExpense">¥0</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-label">收入</p>
+                <p class="stat-value small" id="billIncome">¥0</p>
+              </div>
+              <div class="stat-card">
+                <p class="stat-label">结余</p>
+                <p class="stat-value small" id="billBalance">¥0</p>
+              </div>
+            </div>
+          </div>
+          <div class="category-list" id="categoryStats"></div>
+        </section>
+
+        <section class="list-panel panel" aria-labelledby="ledgerListTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="ledgerListTitle">最近记录</h3>
+              <p class="section-note">只保存在你的浏览器里。</p>
+            </div>
+          </div>
+          <div class="list" id="ledgerList"></div>
+        </section>
+      </section>
+
+      <section class="main-view" id="deciderView" data-view="decider" aria-labelledby="deciderTitle">
+        <div class="hero-panel panel">
+          <p class="eyebrow">决定器</p>
+          <h2 class="page-title" id="deciderTitle">选不动的时候，让噜噜伸手</h2>
+          <p class="page-copy">一行一个选项，认真也行，随缘也行，嘴欠也行。</p>
+        </div>
+
+        <section class="wheel-panel panel" aria-label="转盘预设">
+          <div class="preset-grid">
+            <button class="preset-btn" type="button" data-decision-preset="food">吃什么</button>
+            <button class="preset-btn" type="button" data-decision-preset="drink">喝什么</button>
+            <button class="preset-btn" type="button" data-decision-preset="fun">玩什么</button>
+            <button class="preset-btn" type="button" data-decision-preset="task">先做什么</button>
+          </div>
+          <div class="wheel-shell">
+            <div class="wheel-pointer" aria-hidden="true"></div>
+            <div class="wheel" id="decisionWheel" aria-hidden="true">
+              <svg class="wheel-art" id="wheelSvg" viewBox="0 0 200 200"></svg>
+              <div class="wheel-center" id="wheelCenter">选项<br />转盘</div>
+            </div>
+          </div>
+
+          <details class="custom-editor" id="decisionEditor">
+            <summary>编辑 / 自定义转盘</summary>
+            <form class="editor-form" id="deciderForm">
+              <div class="segmented" style="--segments: 3;" aria-label="决定语气">
+                <button class="segment-btn is-active" type="button" data-decision-mode="gentle">认真</button>
+                <button class="segment-btn" type="button" data-decision-mode="random">随缘</button>
+                <button class="segment-btn" type="button" data-decision-mode="roast">毒舌</button>
+              </div>
+              <textarea class="textarea" id="decisionOptions" style="margin-top: 12px;" placeholder="吃面&#10;吃饭&#10;点个轻食假装自律"></textarea>
+              <button class="primary-btn" type="submit" style="width: 100%; margin-top: 12px;">让噜噜决定</button>
+            </form>
+          </details>
+        </section>
+
+        <section class="result-card panel" id="decisionResult" aria-live="polite">
+          <p class="result-label">噜噜选了</p>
+          <p class="result-choice" id="decisionChoice"></p>
+          <p class="result-comment" id="decisionComment"></p>
+        </section>
+
+        <section class="list-panel panel" aria-labelledby="decisionHistoryTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="decisionHistoryTitle">最近决定</h3>
+              <p class="section-note">选择困难的案底。</p>
+            </div>
+          </div>
+          <div class="list" id="decisionHistory"></div>
+        </section>
+      </section>
+
+      <section class="main-view" id="mineView" data-view="mine" aria-labelledby="mineTitle">
+        <div class="hero-panel panel">
+          <p class="eyebrow">我的</p>
+          <h2 class="page-title" id="mineTitle">这里是噜噜的控制台</h2>
+          <p class="page-copy" id="companionText">你们已经一起待了一段时间。</p>
+        </div>
+
+        <section class="panel" aria-labelledby="settingsTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="settingsTitle">桌宠设置</h3>
+              <p class="section-note">舒服最重要，噜噜只是嘴上不承认。</p>
+            </div>
+          </div>
+          <div class="settings-list">
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">噜噜性格</p>
+                <p class="setting-note">决定它平时说话的味道。</p>
+              </div>
+              <div class="segmented" style="--segments: 3; width: 190px;" aria-label="噜噜性格">
+                <button class="segment-btn" type="button" data-personality="gentle">温柔</button>
+                <button class="segment-btn is-active" type="button" data-personality="balanced">平衡</button>
+                <button class="segment-btn" type="button" data-personality="roast">毒舌</button>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">深色模式</p>
+                <p class="setting-note">晚上打开会舒服很多。</p>
+              </div>
+              <label class="switch">
+                <input id="themeInput" type="checkbox" aria-label="深色模式" />
+                <span class="switch-dot"></span>
+              </label>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">自动冒泡</p>
+                <p class="setting-note">偶尔自己说句话。</p>
+              </div>
+              <label class="switch">
+                <input id="autoTalkInput" type="checkbox" />
+                <span class="switch-dot"></span>
+              </label>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">噜噜大小</p>
+                <p class="setting-note">太大挡路，太小没气势。</p>
+              </div>
+              <input class="range" id="petSizeInput" type="range" min="92" max="154" step="2" />
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">每日预算</p>
+                <p class="setting-note">超过后噜噜会提醒。</p>
+              </div>
+              <input class="small-input" id="dailyBudgetInput" type="number" min="0" step="1" inputmode="numeric" />
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">月度预算</p>
+                <p class="setting-note">用来观察这个月有没有跑偏。</p>
+              </div>
+              <input class="small-input" id="monthlyBudgetInput" type="number" min="0" step="1" inputmode="numeric" />
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="dataTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="dataTitle">数据</h3>
+              <p class="section-note" id="dataSummary">所有内容都保存在本机浏览器。</p>
+            </div>
+          </div>
+          <div class="settings-list">
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">离线使用</p>
+                <p class="setting-note" id="offlineStatusText">正在检查能不能离线打开。</p>
+              </div>
+              <button class="ghost-btn" id="installAppButton" type="button">安装提示</button>
+            </div>
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">备份数据</p>
+                <p class="setting-note">导出或导入待办、账本、决定和设置。</p>
+              </div>
+              <div class="setting-actions">
+                <button class="ghost-btn" id="exportDataButton" type="button">导出</button>
+                <button class="ghost-btn" id="importDataButton" type="button">导入</button>
+                <input class="hidden-file" id="importDataInput" type="file" accept="application/json,.json" aria-label="导入 Spark 备份" />
+              </div>
+            </div>
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">重置噜噜位置</p>
+                <p class="setting-note">把它放回右下角。</p>
+              </div>
+              <button class="ghost-btn" id="resetPetButton" type="button">重置</button>
+            </div>
+            <div class="setting-row">
+              <div>
+                <p class="setting-title">清空记录</p>
+                <p class="setting-note">清空待办、账本和决定历史。</p>
+              </div>
+              <button class="danger-btn" id="clearDataButton" type="button">清空</button>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="desk-pet" id="deskPet">
+    <div class="pet-bubble" id="petBubble" role="status" aria-live="polite"></div>
+    <button class="pet-button" id="petButton" type="button" aria-label="和噜噜互动">
+      <img class="pet-image" id="petImage" src="images/normal.gif" alt="待机中的噜噜" />
+    </button>
+  </div>
+
+  <nav class="bottom-nav" aria-label="底部导航">
+    <button class="nav-item" type="button" data-nav="home" aria-current="page">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 10.8 12 3l9 7.8" />
+        <path d="M5 10v10h14V10" />
+        <path d="M9.5 20v-6h5v6" />
+      </svg>
+      <span class="nav-label">首页</span>
+    </button>
+
+    <button class="nav-item" type="button" data-nav="todo">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 6h13" />
+        <path d="M8 12h13" />
+        <path d="M8 18h13" />
+        <path d="m3 6 1.2 1.2L6.5 5" />
+        <path d="m3 12 1.2 1.2L6.5 11" />
+        <path d="m3 18 1.2 1.2L6.5 17" />
+      </svg>
+      <span class="nav-label">待办</span>
+    </button>
+
+    <button class="nav-item" type="button" data-nav="ledger">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 3h12v18H6z" />
+        <path d="M9 7h6" />
+        <path d="M9 11h6" />
+        <path d="M9 15h2" />
+        <path d="M15 15h.01" />
+      </svg>
+      <span class="nav-label">记账</span>
+    </button>
+
+    <button class="nav-item" type="button" data-nav="decider">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3v3" />
+        <path d="M12 18v3" />
+        <path d="M3 12h3" />
+        <path d="M18 12h3" />
+        <circle cx="12" cy="12" r="6" />
+        <path d="m12 12 3-3" />
+      </svg>
+      <span class="nav-label">决定器</span>
+    </button>
+
+    <button class="nav-item" type="button" data-nav="mine">
+      <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
+      </svg>
+      <span class="nav-label">我的</span>
+    </button>
+  </nav>
+
+  <script>
+    const APP_VERSION = "1.3.0";
+    const BACKUP_VERSION = 1;
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+    const DRAG_THRESHOLD = 8;
+    const DEFAULT_LEDGER_CATEGORIES = ["吃喝", "交通", "购物", "娱乐", "居家", "学习", "健康", "人情", "工资", "副业", "其他"];
+    const STORAGE = {
+      todos: "spark:todos",
+      entries: "spark:ledger-entries",
+      decisions: "spark:decisions",
+      settings: "spark:settings",
+      lastOpenedAt: "spark:last-opened-at",
+      petPosition: "spark:desk-pet-position"
+    };
+
+    const defaultSettings = {
+      roastMode: true,
+      personality: "balanced",
+      theme: "light",
+      autoTalk: false,
+      dailyBudget: 120,
+      monthlyBudget: 3000,
+      ledgerCategories: DEFAULT_LEDGER_CATEGORIES,
+      petSize: 124,
+      startedAt: Date.now()
+    };
+
+    const petImages = {
+      idle: {
+        src: "images/normal.gif",
+        alt: "待机中的噜噜"
+      },
+      grabbed: {
+        src: "images/grabbed.gif",
+        fallbackSrc: "images/grabbed.png",
+        alt: "被揪起来的噜噜"
+      },
+      happy: {
+        src: "images/happy2.gif",
+        fallbackSrc: "images/happy.png",
+        alt: "开心的噜噜"
+      },
+      happyBig: {
+        src: "images/happy.gif",
+        fallbackSrc: "images/happy.png",
+        alt: "大开心的噜噜"
+      },
+      sad: {
+        src: "images/sad.png",
+        alt: "委屈的噜噜"
+      }
+    };
+
+    const petLines = {
+      gentle: [
+        "慢慢来，今天先把自己开机就很厉害。",
+        "你负责往前一点点，剩下的火花交给时间。",
+        "别急着变强，先把今天过得像个人类。",
+        "小步也算数，噜噜已经盖章了。",
+        "今天不必完美，能开始就很有出息。"
+      ],
+      roast: [
+        "别盯着任务发呆，它不会因为害羞自己完成。",
+        "你的拖延很稳定，稳定得我有点害怕。",
+        "先做一小步吧，不然梦想又要报警说你失联。",
+        "焦虑可以，别只焦虑，稍微动一下也行。",
+        "你不是没灵感，你是被沙发封印了。"
+      ],
+      todoAdded: [
+        "好，又给未来的你加活了。",
+        "收到，我先替你盯着它。",
+        "写下来了，逃跑难度加一。"
+      ],
+      todoDone: [
+        "可以啊，这一下有点东西。",
+        "完成了？我勉强承认你今天有在发光。",
+        "不错，给你一颗精神橘子。"
+      ],
+      todoDeleted: [
+        "删掉也算一种断舍离。",
+        "它走得很安详，别太想念。",
+        "行吧，少一个敌人。"
+      ],
+      ledgerAdded: [
+        "记下来了，钱的行踪终于有口供了。",
+        "这笔我先收进案卷。",
+        "账本有了，你就少一点玄学。"
+      ],
+      budgetWarning: [
+        "今日预算已经被你按在地上摩擦了。",
+        "钱出去玩可以，别让它夜不归宿。",
+        "提醒一下，你的钱包正在发出微弱求救。"
+      ],
+      decision: [
+        "选好了，别再把问题退回给宇宙。",
+        "噜噜拍板了，执行吧。",
+        "答案出现，纠结可以下班了。"
+      ],
+      interrupted: [
+        "喂，我刚站好，你又来拎我。",
+        "打扰本豚发呆，是要付橘子税的。",
+        "放下了？很好，我原谅你三秒。",
+        "下次揪之前先预约，我很忙，忙着淡定。",
+        "我不是挂件，但你手法还挺熟。"
+      ],
+      sad: [
+        "三天没来，你是把我寄存在云端了吗？",
+        "我都快蔫成橘子皮了，终于想起我了。",
+        "这几天我很淡定，淡定到有点委屈。",
+        "欢迎回来，差点以为 Spark 只剩我守家。"
+      ]
+    };
+
+    const decisionPresets = {
+      food: ["米饭", "面", "粉", "饺子", "火锅", "麻辣烫", "轻食", "外卖盲盒"],
+      drink: ["咖啡", "奶茶", "果茶", "气泡水", "酸奶", "豆浆", "热水", "今天先不喝甜的"],
+      fun: ["散步", "看电影", "打游戏", "逛街", "整理房间", "去公园", "拍照", "躺着恢复能量"],
+      task: ["最小的那件", "最急的那件", "最烦的那件", "五分钟能做完的", "先收拾桌面", "先回消息", "先洗澡", "先休息十分钟"]
+    };
+
+    const wheelColors = ["#ff946a", "#ffd166", "#7bd389", "#7bb7ff", "#ff8fab", "#b8a1ff", "#f9c74f", "#90dbf4"];
+
+    const state = {
+      currentView: "home",
+      todoScope: "today",
+      todoFilter: "all",
+      selectedTodoDate: getISODate(),
+      ledgerKind: "expense",
+      ledgerPeriod: "month",
+      selectedLedgerMonth: getMonthKey(),
+      selectedLedgerYear: new Date().getFullYear(),
+      editingEntryId: null,
+      decisionMode: "gentle",
+      wheelRotation: 0,
+      todos: [],
+      entries: [],
+      decisions: [],
+      settings: { ...defaultSettings }
+    };
+
+    const dragState = {
+      active: false,
+      pointerId: null,
+      startClientX: 0,
+      startClientY: 0,
+      startPetX: 0,
+      startPetY: 0,
+      petX: 0,
+      petY: 0,
+      moved: false
+    };
+
+    let bubbleTimer = null;
+    let petRestoreTimer = null;
+    let autoTalkTimer = null;
+    let decisionTimer = null;
+    let deferredInstallPrompt = null;
+    let currentPetState = "idle";
+
+    function loadJSON(key, fallback) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        return value ?? fallback;
+      } catch (error) {
+        localStorage.removeItem(key);
+        return fallback;
+      }
+    }
+
+    function saveJSON(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function normalizeLedgerCategories(categories) {
+      const source = Array.isArray(categories) && categories.length ? categories : DEFAULT_LEDGER_CATEGORIES;
+      const seen = new Set();
+      return source
+        .map((category) => String(category).trim())
+        .filter((category) => {
+          if (!category || seen.has(category)) return false;
+          seen.add(category);
+          return true;
+        })
+        .slice(0, 24);
+    }
+
+    function loadState() {
+      state.todos = loadJSON(STORAGE.todos, []);
+      state.entries = loadJSON(STORAGE.entries, []);
+      state.decisions = loadJSON(STORAGE.decisions, []);
+      const savedSettings = loadJSON(STORAGE.settings, {});
+      const hasStartedAt = Number.isFinite(savedSettings.startedAt);
+      state.settings = {
+        ...defaultSettings,
+        ...savedSettings,
+        theme: savedSettings.theme === "dark" ? "dark" : "light",
+        personality: savedSettings.personality ?? (savedSettings.roastMode === false ? "gentle" : "balanced"),
+        dailyBudget: Number.isFinite(Number(savedSettings.dailyBudget)) ? Math.max(0, Number(savedSettings.dailyBudget)) : defaultSettings.dailyBudget,
+        monthlyBudget: Number.isFinite(Number(savedSettings.monthlyBudget)) ? Math.max(0, Number(savedSettings.monthlyBudget)) : defaultSettings.monthlyBudget,
+        ledgerCategories: normalizeLedgerCategories(savedSettings.ledgerCategories),
+        startedAt: hasStartedAt ? savedSettings.startedAt : Date.now()
+      };
+      if (!hasStartedAt) {
+        saveSettings();
+      }
+      migrateTodos();
+    }
+
+    function saveTodos() {
+      saveJSON(STORAGE.todos, state.todos);
+    }
+
+    function saveEntries() {
+      saveJSON(STORAGE.entries, state.entries);
+    }
+
+    function saveDecisions() {
+      saveJSON(STORAGE.decisions, state.decisions);
+    }
+
+    function saveSettings() {
+      saveJSON(STORAGE.settings, state.settings);
+    }
+
+    function getBackupPayload() {
+      return {
+        app: "Spark",
+        backupVersion: BACKUP_VERSION,
+        appVersion: APP_VERSION,
+        exportedAt: new Date().toISOString(),
+        data: {
+          todos: state.todos,
+          entries: state.entries,
+          decisions: state.decisions,
+          settings: state.settings,
+          petPosition: loadJSON(STORAGE.petPosition, null),
+          lastOpenedAt: Number(localStorage.getItem(STORAGE.lastOpenedAt)) || null
+        }
+      };
+    }
+
+    function getBackupFileName() {
+      const now = new Date();
+      const date = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0")
+      ].join("");
+      const time = [
+        String(now.getHours()).padStart(2, "0"),
+        String(now.getMinutes()).padStart(2, "0")
+      ].join("");
+      return `spark-backup-${date}-${time}.json`;
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(getBackupPayload(), null, 2)], {
+        type: "application/json"
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = getBackupFileName();
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1200);
+      petReact("talk", "备份打包好了。数据终于有逃生舱了。");
+    }
+
+    function normalizeImportedSettings(settings = {}) {
+      const normalized = {
+        ...defaultSettings,
+        ...settings,
+        theme: settings.theme === "dark" ? "dark" : "light",
+        personality: ["gentle", "balanced", "roast"].includes(settings.personality) ? settings.personality : "balanced",
+        dailyBudget: Number.isFinite(Number(settings.dailyBudget)) ? Math.max(0, Number(settings.dailyBudget)) : defaultSettings.dailyBudget,
+        monthlyBudget: Number.isFinite(Number(settings.monthlyBudget)) ? Math.max(0, Number(settings.monthlyBudget)) : defaultSettings.monthlyBudget,
+        ledgerCategories: normalizeLedgerCategories(settings.ledgerCategories),
+        petSize: Math.min(154, Math.max(92, Number(settings.petSize) || defaultSettings.petSize)),
+        startedAt: Number.isFinite(Number(settings.startedAt)) ? Number(settings.startedAt) : Date.now()
+      };
+
+      normalized.roastMode = normalized.personality !== "gentle";
+      normalized.autoTalk = Boolean(settings.autoTalk);
+      return normalized;
+    }
+
+    function applyImportedData(payload) {
+      const data = payload?.data ?? payload;
+      if (!data || typeof data !== "object") {
+        throw new Error("INVALID_BACKUP");
+      }
+
+      const todos = Array.isArray(data.todos) ? data.todos : [];
+      const entries = Array.isArray(data.entries) ? data.entries : [];
+      const decisions = Array.isArray(data.decisions) ? data.decisions : [];
+      const settings = normalizeImportedSettings(data.settings);
+      const petPosition = data.petPosition;
+
+      state.todos = todos;
+      state.entries = entries;
+      state.decisions = decisions;
+      state.settings = settings;
+      saveTodos();
+      saveEntries();
+      saveDecisions();
+      saveSettings();
+
+      if (Number.isFinite(data.lastOpenedAt)) {
+        localStorage.setItem(STORAGE.lastOpenedAt, String(data.lastOpenedAt));
+      }
+
+      if (Number.isFinite(petPosition?.x) && Number.isFinite(petPosition?.y)) {
+        localStorage.setItem(STORAGE.petPosition, JSON.stringify({
+          x: Math.round(petPosition.x),
+          y: Math.round(petPosition.y)
+        }));
+      }
+
+      migrateTodos();
+      applyTheme();
+      initPetPosition();
+      renderAll();
+      startAutoTalk();
+    }
+
+    function importDataFile(file) {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        try {
+          const payload = JSON.parse(String(reader.result || ""));
+          const confirmed = window.confirm("导入会覆盖当前待办、账本、决定历史和设置。确定继续吗？");
+          if (!confirmed) return;
+
+          applyImportedData(payload);
+          petReact("talk", "导入完成。噜噜把旧账本搬进来了。");
+        } catch (error) {
+          petReact("talk", "这个备份文件我读不懂，可能不是 Spark 的。");
+        }
+      });
+      reader.addEventListener("error", () => {
+        petReact("talk", "读取失败了。文件好像在装睡。");
+      });
+      reader.readAsText(file);
+    }
+
+    function applyTheme() {
+      const theme = state.settings.theme === "dark" ? "dark" : "light";
+      const isDark = theme === "dark";
+      const themeColor = isDark ? "#111113" : "#f8f8fb";
+      const themeToggle = document.querySelector("#themeToggleButton");
+      const themeInput = document.querySelector("#themeInput");
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+      document.documentElement.dataset.theme = theme;
+      if (themeMeta) {
+        themeMeta.setAttribute("content", themeColor);
+      }
+      if (themeToggle) {
+        themeToggle.setAttribute("aria-pressed", String(isDark));
+        themeToggle.setAttribute("aria-label", isDark ? "切换浅色模式" : "切换深色模式");
+      }
+      if (themeInput) {
+        themeInput.checked = isDark;
+      }
+    }
+
+    function setTheme(theme, shouldTalk = true) {
+      state.settings.theme = theme === "dark" ? "dark" : "light";
+      saveSettings();
+      applyTheme();
+      if (shouldTalk) {
+        petReact("talk", state.settings.theme === "dark" ? "夜间模式就位，眼睛先松口气。" : "浅色模式回来，今天继续清清爽爽。");
+      }
+    }
+
+    function setOfflineStatus(text) {
+      const status = document.querySelector("#offlineStatusText");
+      if (status) {
+        status.textContent = text;
+      }
+    }
+
+    function getInstallHint() {
+      if (location.protocol === "file:") {
+        return "当前是文件打开。想添加到桌面，需要先用浏览器地址访问。";
+      }
+
+      if (!window.isSecureContext) {
+        return "当前局域网地址可以预览，但真正离线安装通常需要 HTTPS。";
+      }
+
+      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        return "在 Safari 里点分享按钮，再选“添加到主屏幕”。";
+      }
+
+      return "在浏览器菜单里选择“添加到主屏幕”或“安装应用”。";
+    }
+
+    function updateInstallButtonLabel() {
+      const button = document.querySelector("#installAppButton");
+      if (!button) return;
+
+      button.textContent = deferredInstallPrompt ? "安装" : "安装提示";
+    }
+
+    function registerServiceWorker() {
+      if (location.protocol === "file:") {
+        setOfflineStatus("文件模式可直接打开，但不能启用离线缓存。");
+        return;
+      }
+
+      if (!("serviceWorker" in navigator)) {
+        setOfflineStatus("当前浏览器不支持离线缓存。");
+        return;
+      }
+
+      if (!window.isSecureContext) {
+        setOfflineStatus("局域网 HTTP 可预览；离线安装需要 HTTPS 或本机 localhost。");
+        return;
+      }
+
+      navigator.serviceWorker.register("./sw.js")
+        .then(() => navigator.serviceWorker.ready)
+        .then(() => {
+          setOfflineStatus("离线缓存已准备好，装到桌面后会更像 App。");
+        })
+        .catch(() => {
+          setOfflineStatus("离线缓存暂时没启用，刷新后可以再试。");
+        });
+    }
+
+    function setupPWA() {
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        setOfflineStatus("可以安装到桌面了。");
+        updateInstallButtonLabel();
+      });
+
+      window.addEventListener("appinstalled", () => {
+        deferredInstallPrompt = null;
+        setOfflineStatus("已经安装到桌面。");
+        updateInstallButtonLabel();
+        petReact("talk", "装好了。现在我正式入驻你的手机桌面。");
+      });
+
+      document.querySelector("#installAppButton").addEventListener("click", async () => {
+        if (!deferredInstallPrompt) {
+          petReact("talk", getInstallHint(), 5200);
+          return;
+        }
+
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        updateInstallButtonLabel();
+        setOfflineStatus(choice.outcome === "accepted" ? "安装完成。" : "这次先不安装，也行。");
+      });
+
+      updateInstallButtonLabel();
+      registerServiceWorker();
+    }
+
+    function formatToday() {
+      const today = new Date();
+      return new Intl.DateTimeFormat("zh-CN", {
+        month: "long",
+        day: "numeric",
+        weekday: "long"
+      }).format(today);
+    }
+
+    function getISODate(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getMonthKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+    }
+
+    function parseISODate(dateString) {
+      const [year, month, day] = dateString.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function addDays(dateString, days) {
+      const date = parseISODate(dateString);
+      date.setDate(date.getDate() + days);
+      return getISODate(date);
+    }
+
+    function addMonths(dateString, months) {
+      const source = parseISODate(dateString);
+      const day = source.getDate();
+      const target = new Date(source.getFullYear(), source.getMonth() + months, 1);
+      const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+      target.setDate(Math.min(day, lastDay));
+      return getISODate(target);
+    }
+
+    function formatTodoDateLabel(dateString) {
+      const today = getISODate();
+      if (dateString === today) return "今天";
+      if (dateString === addDays(today, -1)) return "昨天";
+      if (dateString === addDays(today, 1)) return "明天";
+
+      return new Intl.DateTimeFormat("zh-CN", {
+        month: "long",
+        day: "numeric",
+        weekday: "long"
+      }).format(parseISODate(dateString));
+    }
+
+    function getTodoDate(todo) {
+      return todo.dueDate ?? getISODate(new Date(todo.createdAt || Date.now()));
+    }
+
+    function isTodoOverdue(todo) {
+      return !todo.done && getTodoDate(todo) < getISODate();
+    }
+
+    function isTodoInThisWeek(todo) {
+      const today = getISODate();
+      const weekEnd = addDays(today, 6);
+      const date = getTodoDate(todo);
+      return !todo.done && date >= today && date <= weekEnd;
+    }
+
+    function isTodoFuture(todo) {
+      return !todo.done && getTodoDate(todo) > addDays(getISODate(), 6);
+    }
+
+    function getRepeatLabel(repeat) {
+      const labels = {
+        daily: "每天重复",
+        weekly: "每周重复",
+        monthly: "每月重复"
+      };
+      return labels[repeat] ?? "";
+    }
+
+    function getNextRepeatDate(todo) {
+      const repeat = todo.repeat ?? "none";
+      const today = getISODate();
+      let nextDate = getTodoDate(todo);
+
+      if (repeat === "daily") {
+        do {
+          nextDate = addDays(nextDate, 1);
+        } while (nextDate <= today);
+        return nextDate;
+      }
+
+      if (repeat === "weekly") {
+        do {
+          nextDate = addDays(nextDate, 7);
+        } while (nextDate <= today);
+        return nextDate;
+      }
+
+      if (repeat === "monthly") {
+        do {
+          nextDate = addMonths(nextDate, 1);
+        } while (nextDate <= today);
+        return nextDate;
+      }
+
+      return null;
+    }
+
+    function migrateTodos() {
+      let changed = false;
+      state.todos.forEach((todo) => {
+        if (!todo.dueDate) {
+          todo.dueDate = getISODate(new Date(todo.createdAt || Date.now()));
+          changed = true;
+        }
+        if (!["none", "daily", "weekly", "monthly"].includes(todo.repeat)) {
+          todo.repeat = "none";
+          changed = true;
+        }
+      });
+      if (changed) {
+        saveTodos();
+      }
+    }
+
+    function formatTime(timestamp) {
+      return new Intl.DateTimeFormat("zh-CN", {
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date(timestamp));
+    }
+
+    function formatMoney(value) {
+      const number = Number(value) || 0;
+      return `¥${number.toFixed(number % 1 === 0 ? 0 : 2)}`;
+    }
+
+    function getDayStart(date = new Date()) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    }
+
+    function getWeekStart(date = new Date()) {
+      const day = date.getDay() || 7;
+      const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      start.setDate(start.getDate() - day + 1);
+      return start.getTime();
+    }
+
+    function isToday(timestamp) {
+      return timestamp >= getDayStart();
+    }
+
+    function isInSelectedLedgerPeriod(entry) {
+      const date = new Date(entry.createdAt);
+      if (state.ledgerPeriod === "year") {
+        return date.getFullYear() === Number(state.selectedLedgerYear);
+      }
+
+      return getMonthKey(date) === state.selectedLedgerMonth;
+    }
+
+    function sumEntries(predicate) {
+      return state.entries.reduce((total, entry) => {
+        return predicate(entry) ? total + Number(entry.amount) : total;
+      }, 0);
+    }
+
+    function pickOne(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function pickRandomLine() {
+      if (state.settings.personality === "gentle") {
+        return pickOne(petLines.gentle);
+      }
+
+      if (state.settings.personality === "roast") {
+        return pickOne(Math.random() > 0.25 ? petLines.roast : petLines.gentle);
+      }
+
+      return pickOne(Math.random() > 0.5 ? petLines.gentle : petLines.roast);
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function createId() {
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function switchView(viewName) {
+      state.currentView = viewName;
+      document.querySelectorAll("[data-view]").forEach((view) => {
+        view.classList.toggle("is-active", view.dataset.view === viewName);
+      });
+      document.querySelectorAll("[data-nav]").forEach((button) => {
+        if (button.dataset.nav === viewName) {
+          button.setAttribute("aria-current", "page");
+        } else {
+          button.removeAttribute("aria-current");
+        }
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      renderAll();
+    }
+
+    function renderHome() {
+      const today = getISODate();
+      const tomorrow = addDays(today, 1);
+      const todayTodos = state.todos.filter((todo) => getTodoDate(todo) === today);
+      const tomorrowTodos = state.todos.filter((todo) => getTodoDate(todo) === tomorrow);
+      const overdueTodos = state.todos.filter(isTodoOverdue).sort((a, b) => getTodoDate(a).localeCompare(getTodoDate(b)));
+      const todoLeft = todayTodos.filter((todo) => !todo.done).length;
+      const todoDoneToday = todayTodos.filter((todo) => todo.done).length;
+      const tomorrowLeft = tomorrowTodos.filter((todo) => !todo.done).length;
+      const overdueCount = overdueTodos.length;
+      const todaySpend = sumEntries((entry) => entry.kind === "expense" && isToday(entry.createdAt));
+      const overBudget = todaySpend > Number(state.settings.dailyBudget || 0) && state.settings.dailyBudget > 0;
+      const budgetText = state.settings.dailyBudget > 0
+        ? `${Math.round((todaySpend / state.settings.dailyBudget) * 100)}%`
+        : "未设置";
+
+      document.querySelector("#homeTodoLeft").textContent = todoLeft;
+      document.querySelector("#homeTodoDone").textContent = todoDoneToday;
+      document.querySelector("#homeTodaySpend").textContent = formatMoney(todaySpend);
+
+      let insight = "慢慢启动也很好。噜噜会一直在旁边晃悠，顺便监督你别把生活过成未读消息。";
+      let focus = {
+        title: "先挑一件最小的事",
+        text: "今天还没形成压力，很适合轻轻启动。",
+        meta: "建议从待办里选一件五分钟能完成的。",
+        button: "去待办",
+        view: "todo",
+        date: today,
+        scope: "today"
+      };
+      if (overdueCount > 0) {
+        insight = `有 ${overdueCount} 件事逾期了。噜噜建议先救最小的一件。`;
+        focus = {
+          title: "先救逾期",
+          text: `有 ${overdueCount} 件事已经过期。别全背着，先处理最容易的一件。`,
+          meta: `最早逾期：${formatTodoDateLabel(getTodoDate(overdueTodos[0]))}`,
+          button: "查看逾期",
+          view: "todo",
+          date: getTodoDate(overdueTodos[0]),
+          scope: "overdue"
+        };
+      } else if (todoLeft >= 8) {
+        insight = "待办有点多了。噜噜建议先挑一个最小的，不然它们会组成合唱团。";
+        focus.title = "清掉一个小任务";
+        focus.text = "今天的待办偏多，不要试图一口吃完。先拿最小的开刀。";
+      } else if (todoDoneToday > 0 && todoLeft === 0) {
+        insight = "今天完成得不错。噜噜表面淡定，心里已经在小跳。";
+        focus = {
+          title: "今日状态不错",
+          text: "今天的待办已经收得很漂亮。可以记一笔账，或者让转盘决定休息方式。",
+          meta: "噜噜建议：别把休息也卷成任务。",
+          button: "去决定器",
+          view: "decider",
+          date: today,
+          scope: "today"
+        };
+      } else if (overBudget) {
+        insight = "今日支出超过预算了。钱包还活着，但眼神有点空。";
+        focus = {
+          title: "钱包预警",
+          text: `今日支出 ${formatMoney(todaySpend)}，已经超过预算。先看看钱去哪儿了。`,
+          meta: "噜噜站在钱包这一边。",
+          button: "看账本",
+          view: "ledger",
+          date: today,
+          scope: "today"
+        };
+      } else if (todoLeft > 0) {
+        insight = `还有 ${todoLeft} 件事没收尾。别慌，先拿下一件。`;
+        focus.text = `今天还有 ${todoLeft} 件待办。先完成一件，噜噜再考虑夸你。`;
+      } else if (tomorrowLeft > 0) {
+        focus = {
+          title: "明天提前看一眼",
+          text: `明天已经有 ${tomorrowLeft} 件事在排队。提前看一眼，明天就少一点慌。`,
+          meta: "预习生活，不算加班。",
+          button: "看明天",
+          view: "todo",
+          date: tomorrow,
+          scope: "tomorrow"
+        };
+      }
+      document.querySelector("#homeInsight").textContent = insight;
+      document.querySelector("#homeFocusTitle").textContent = focus.title;
+      document.querySelector("#homeFocusText").textContent = focus.text;
+      document.querySelector("#homeFocusMeta").textContent = focus.meta;
+      document.querySelector("#homeFocusButton").textContent = focus.button;
+      document.querySelector("#homeFocusButton").dataset.go = focus.view;
+      document.querySelector("#homeFocusButton").dataset.focusDate = focus.date;
+      document.querySelector("#homeFocusButton").dataset.focusScope = focus.scope;
+      document.querySelector("#homeSignals").innerHTML = [
+        ["逾期", overdueCount ? `${overdueCount} 件` : "清净"],
+        ["明天", tomorrowLeft ? `${tomorrowLeft} 件` : "暂空"],
+        ["预算", budgetText],
+        ["本月支出", formatMoney(sumEntries((entry) => entry.kind === "expense" && getMonthKey(new Date(entry.createdAt)) === getMonthKey()))]
+      ].map(([label, value]) => `
+        <div class="signal-chip">
+          <p class="signal-label">${label}</p>
+          <p class="signal-value">${value}</p>
+        </div>
+      `).join("");
+    }
+
+    function renderTodoAssist() {
+      const today = getISODate();
+      const tomorrow = addDays(today, 1);
+      const overdueTodos = state.todos
+        .filter(isTodoOverdue)
+        .sort((a, b) => getTodoDate(a).localeCompare(getTodoDate(b)))
+        .slice(0, 4);
+      const tomorrowTodos = state.todos
+        .filter((todo) => getTodoDate(todo) === tomorrow && !todo.done)
+        .slice(0, 4);
+      const repeatTodos = state.todos
+        .filter((todo) => !todo.done && (todo.repeat ?? "none") !== "none")
+        .sort((a, b) => getTodoDate(a).localeCompare(getTodoDate(b)))
+        .slice(0, 4);
+
+      const renderPreviewList = (items, emptyText) => {
+        if (!items.length) return `<ul class="preview-list"><li>${emptyText}</li></ul>`;
+        return `<ul class="preview-list">${items.map((todo) => `<li>${escapeHTML(todo.text)}</li>`).join("")}</ul>`;
+      };
+
+      document.querySelector("#todoAssistGrid").innerHTML = `
+        <article class="preview-card ${overdueTodos.length ? "is-alert" : ""}">
+          <p class="preview-title">逾期巡逻</p>
+          ${renderPreviewList(overdueTodos, "没有逾期，噜噜暂时不用敲警钟。")}
+        </article>
+        <article class="preview-card">
+          <p class="preview-title">明日预览</p>
+          ${renderPreviewList(tomorrowTodos, "明天还没安排，空气很新鲜。")}
+        </article>
+        <article class="preview-card">
+          <p class="preview-title">循环任务</p>
+          ${renderPreviewList(repeatTodos, "暂无重复任务，生活还没进入自动播放。")}
+        </article>
+      `;
+    }
+
+    function getTodoScopeCounts() {
+      const today = getISODate();
+      const tomorrow = addDays(today, 1);
+
+      return {
+        today: state.todos.filter((todo) => getTodoDate(todo) === today && !todo.done).length,
+        tomorrow: state.todos.filter((todo) => getTodoDate(todo) === tomorrow && !todo.done).length,
+        overdue: state.todos.filter(isTodoOverdue).length,
+        week: state.todos.filter(isTodoInThisWeek).length,
+        future: state.todos.filter(isTodoFuture).length,
+        done: state.todos.filter((todo) => todo.done).length
+      };
+    }
+
+    function getTodoScopeLabel(scope = state.todoScope) {
+      const labels = {
+        today: "今天",
+        tomorrow: "明天",
+        overdue: "逾期",
+        week: "本周",
+        future: "未来",
+        done: "已完成",
+        date: formatTodoDateLabel(state.selectedTodoDate)
+      };
+      return labels[scope] ?? "待办";
+    }
+
+    function getScopedTodos() {
+      const today = getISODate();
+      const tomorrow = addDays(today, 1);
+      const scope = state.todoScope;
+
+      if (scope === "today") {
+        return state.todos.filter((todo) => getTodoDate(todo) === today);
+      }
+      if (scope === "tomorrow") {
+        return state.todos.filter((todo) => getTodoDate(todo) === tomorrow);
+      }
+      if (scope === "overdue") {
+        return state.todos.filter(isTodoOverdue);
+      }
+      if (scope === "week") {
+        return state.todos.filter(isTodoInThisWeek);
+      }
+      if (scope === "future") {
+        return state.todos.filter(isTodoFuture);
+      }
+      if (scope === "done") {
+        return state.todos.filter((todo) => todo.done);
+      }
+      return state.todos.filter((todo) => getTodoDate(todo) === state.selectedTodoDate);
+    }
+
+    function getTodoEmptyText() {
+      const emptyText = {
+        today: "今天暂时很清净。噜噜希望这不是你忘了写。",
+        tomorrow: "明天还没安排。空气很新鲜，先别急着塞满。",
+        overdue: "没有逾期，很好，噜噜今天不用敲警钟。",
+        week: "本周暂时没有待办排队。你确定不是记在脑子里了吗？",
+        future: "未来暂时空着。给生活留白也挺高级。",
+        done: "还没有完成记录。先做一件小的，给噜噜一点发挥空间。",
+        date: `${formatTodoDateLabel(state.selectedTodoDate)}暂时很清净。噜噜希望这不是你忘了写。`
+      };
+
+      return emptyText[state.todoScope] ?? emptyText.date;
+    }
+
+    function renderTodoScopes() {
+      const counts = getTodoScopeCounts();
+      const countMap = {
+        todoScopeToday: counts.today,
+        todoScopeTomorrow: counts.tomorrow,
+        todoScopeOverdue: counts.overdue,
+        todoScopeWeek: counts.week,
+        todoScopeFuture: counts.future,
+        todoScopeDone: counts.done
+      };
+
+      Object.entries(countMap).forEach(([id, value]) => {
+        document.querySelector(`#${id}`).textContent = value;
+      });
+      document.querySelectorAll("[data-todo-scope]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.todoScope === state.todoScope);
+      });
+    }
+
+    function renderTodos() {
+      const todoList = document.querySelector("#todoList");
+      const scopedTodos = getScopedTodos();
+      const activeTodos = scopedTodos.filter((todo) => !todo.done).length;
+      const doneInScope = scopedTodos.filter((todo) => todo.done).length;
+      const overdueCount = state.todos.filter(isTodoOverdue).length;
+      const scopeLabel = getTodoScopeLabel();
+
+      document.querySelector("#todoDateLabel").textContent = formatTodoDateLabel(state.selectedTodoDate);
+      document.querySelector("#todoDateInput").value = state.selectedTodoDate;
+      document.querySelector("#todoFormHint").textContent = `会添加到${formatTodoDateLabel(state.selectedTodoDate)}。`;
+      document.querySelector("#todoSummary").textContent = `${scopeLabel}：${activeTodos} 件未完成，${doneInScope} 件已完成${overdueCount ? `，另有 ${overdueCount} 件逾期` : ""}。`;
+      renderTodoAssist();
+      renderTodoScopes();
+      document.querySelectorAll("[data-todo-filter]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.todoFilter === state.todoFilter);
+      });
+
+      const filteredTodos = scopedTodos
+        .filter((todo) => {
+          if (state.todoFilter === "active") return !todo.done;
+          if (state.todoFilter === "done") return todo.done;
+          return true;
+        })
+        .sort((a, b) => {
+          if (state.todoScope === "done") {
+            return (b.completedAt || 0) - (a.completedAt || 0);
+          }
+          return Number(a.done) - Number(b.done) || getTodoDate(a).localeCompare(getTodoDate(b)) || b.createdAt - a.createdAt;
+        });
+
+      if (!filteredTodos.length) {
+        todoList.innerHTML = `<div class="empty-state">${getTodoEmptyText()}</div>`;
+        return;
+      }
+
+      todoList.innerHTML = filteredTodos.map((todo) => `
+        <article class="todo-item ${todo.done ? "is-done" : ""}" data-todo-id="${todo.id}">
+          <button class="todo-check" type="button" aria-label="${todo.done ? "标记未完成" : "标记完成"}" data-action="toggle-todo">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+          </button>
+          <div class="item-body">
+            <p class="item-title">${escapeHTML(todo.text)}</p>
+            <p class="item-meta">${[
+              todo.done ? `完成于 ${formatTime(todo.completedAt)}` : `${isTodoOverdue(todo) ? "已逾期 · " : ""}${formatTodoDateLabel(getTodoDate(todo))}`,
+              getRepeatLabel(todo.repeat)
+            ].filter(Boolean).join(" · ")}</p>
+          </div>
+          <button class="icon-btn" type="button" aria-label="删除待办" data-action="delete-todo">
+            <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6h18" />
+              <path d="M8 6V4h8v2" />
+              <path d="M7 6l1 14h8l1-14" />
+            </svg>
+          </button>
+        </article>
+      `).join("");
+    }
+
+    function getLedgerCategories(extra = [], includeEntryCategories = false) {
+      return normalizeLedgerCategories([
+        ...state.settings.ledgerCategories,
+        ...(includeEntryCategories ? state.entries.map((entry) => entry.category) : []),
+        ...extra
+      ]);
+    }
+
+    function renderLedgerCategoryOptions(selected = document.querySelector("#ledgerCategory")?.value) {
+      return getLedgerCategories(selected ? [selected] : [], true)
+        .map((category) => `<option value="${escapeHTML(category)}" ${category === selected ? "selected" : ""}>${escapeHTML(category)}</option>`)
+        .join("");
+    }
+
+    function renderLedgerCategoryControls() {
+      const categorySelect = document.querySelector("#ledgerCategory");
+      const previousValue = categorySelect.value;
+      const categories = getLedgerCategories();
+
+      categorySelect.innerHTML = categories
+        .map((category) => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`)
+        .join("");
+      if (previousValue && categories.includes(previousValue)) {
+        categorySelect.value = previousValue;
+      }
+
+      document.querySelector("#ledgerCategoryChips").innerHTML = state.settings.ledgerCategories.map((category) => `
+        <span class="category-chip">
+          ${escapeHTML(category)}
+          <button class="chip-remove" type="button" aria-label="删除分类 ${escapeHTML(category)}" data-ledger-category-remove="${escapeHTML(category)}">×</button>
+        </span>
+      `).join("");
+    }
+
+    function addLedgerCategory(category) {
+      const value = String(category).trim();
+      if (!value) {
+        petReact("talk", "分类名不能是空气。");
+        return;
+      }
+
+      if (state.settings.ledgerCategories.includes(value)) {
+        petReact("talk", "这个分类已经在了，别让它重复上岗。");
+        return;
+      }
+
+      state.settings.ledgerCategories = normalizeLedgerCategories([...state.settings.ledgerCategories, value]);
+      saveSettings();
+      renderAll();
+      document.querySelector("#ledgerCategory").value = value;
+      petReact("talk", `新增分类「${value}」，账本细节感上来了。`);
+    }
+
+    function removeLedgerCategory(category) {
+      if (state.settings.ledgerCategories.length <= 1) {
+        petReact("talk", "至少留一个分类，不然账本会失去方向。");
+        return;
+      }
+
+      state.settings.ledgerCategories = state.settings.ledgerCategories.filter((item) => item !== category);
+      saveSettings();
+      renderAll();
+      petReact("talk", `分类「${category}」先下班了。已有记录不会丢。`);
+    }
+
+    function renderLedger() {
+      const ledgerList = document.querySelector("#ledgerList");
+      const todayStart = getDayStart();
+      const weekStart = getWeekStart();
+      const todaySpend = sumEntries((entry) => entry.kind === "expense" && entry.createdAt >= todayStart);
+      const todayIncome = sumEntries((entry) => entry.kind === "income" && entry.createdAt >= todayStart);
+      const weekSpend = sumEntries((entry) => entry.kind === "expense" && entry.createdAt >= weekStart);
+      const monthSpend = sumEntries((entry) => entry.kind === "expense" && getMonthKey(new Date(entry.createdAt)) === getMonthKey());
+      const periodEntries = state.entries.filter(isInSelectedLedgerPeriod);
+      const periodExpense = periodEntries.reduce((total, entry) => entry.kind === "expense" ? total + entry.amount : total, 0);
+      const periodIncome = periodEntries.reduce((total, entry) => entry.kind === "income" ? total + entry.amount : total, 0);
+      const budget = Number(state.settings.dailyBudget) || 0;
+      const monthlyBudget = Number(state.settings.monthlyBudget) || 0;
+      const budgetPercent = budget > 0 ? Math.round((todaySpend / budget) * 100) : 0;
+      const budgetProgress = budget > 0 ? Math.min(100, budgetPercent) : 0;
+      const budgetLeft = budget - todaySpend;
+      const monthBudgetPercent = monthlyBudget > 0 ? Math.round((monthSpend / monthlyBudget) * 100) : 0;
+      const monthBudgetProgress = monthlyBudget > 0 ? Math.min(100, monthBudgetPercent) : 0;
+      const monthBudgetLeft = monthlyBudget - monthSpend;
+
+      document.querySelector("#ledgerTodaySpend").textContent = formatMoney(todaySpend);
+      document.querySelector("#ledgerWeekSpend").textContent = formatMoney(weekSpend);
+      document.querySelector("#ledgerTodayBalance").textContent = formatMoney(todayIncome - todaySpend);
+      document.querySelector("#budgetUsedText").textContent = budget > 0 || monthlyBudget > 0
+        ? "今日和本月一起盯，钱包比较安心。"
+        : "还没设置预算。";
+      document.querySelector("#budgetDailyText").textContent = budget > 0
+        ? `${formatMoney(todaySpend)} / ${formatMoney(budget)}`
+        : "未设置";
+      document.querySelector("#budgetProgressBar").style.width = `${budgetProgress}%`;
+      document.querySelector("#budgetProgressBar").classList.toggle("is-over", budget > 0 && todaySpend > budget);
+      document.querySelector("#monthBudgetText").textContent = monthlyBudget > 0
+        ? `${formatMoney(monthSpend)} / ${formatMoney(monthlyBudget)}`
+        : "未设置";
+      document.querySelector("#monthBudgetProgressBar").style.width = `${monthBudgetProgress}%`;
+      document.querySelector("#monthBudgetProgressBar").classList.toggle("is-over", monthlyBudget > 0 && monthSpend > monthlyBudget);
+      document.querySelector("#budgetMoodText").textContent = budget <= 0 && monthlyBudget <= 0
+        ? "去「我的」里给钱包设两条边界。"
+        : budget > 0 && budgetLeft < 0
+          ? `今日超了 ${formatMoney(Math.abs(budgetLeft))}，噜噜已经替钱包皱眉。`
+          : monthlyBudget > 0 && monthBudgetLeft < 0
+            ? `本月超了 ${formatMoney(Math.abs(monthBudgetLeft))}，钱包正在申请休假。`
+            : monthlyBudget > 0
+              ? `本月还剩 ${formatMoney(monthBudgetLeft)}，先别让它夜不归宿。`
+              : `今日还剩 ${formatMoney(budgetLeft)}，钱包暂时没报警。`;
+      document.querySelector("#billExpense").textContent = formatMoney(periodExpense);
+      document.querySelector("#billIncome").textContent = formatMoney(periodIncome);
+      document.querySelector("#billBalance").textContent = formatMoney(periodIncome - periodExpense);
+      document.querySelector("#billPeriodTitle").textContent = state.ledgerPeriod === "year"
+        ? `${state.selectedLedgerYear} 年账单`
+        : `${state.selectedLedgerMonth.replace("-", " 年 ")} 月账单`;
+      document.querySelector("#ledgerMonthInput").value = state.selectedLedgerMonth;
+      document.querySelector("#ledgerYearInput").value = state.selectedLedgerYear;
+      document.querySelector("#ledgerMonthInput").hidden = state.ledgerPeriod !== "month";
+      document.querySelector("#ledgerYearInput").hidden = state.ledgerPeriod !== "year";
+      document.querySelectorAll("[data-ledger-kind]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.ledgerKind === state.ledgerKind);
+      });
+      document.querySelectorAll("[data-ledger-period]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.ledgerPeriod === state.ledgerPeriod);
+      });
+
+      renderLedgerCategoryControls();
+      renderCategoryStats(periodEntries, periodExpense);
+
+      if (!state.entries.length) {
+        ledgerList.innerHTML = `<div class="empty-state">还没有账。钱现在全靠记忆管理，风险略高。</div>`;
+        return;
+      }
+
+      ledgerList.innerHTML = state.entries
+        .slice()
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, 30)
+        .map((entry) => {
+          if (state.editingEntryId === entry.id) {
+            return `
+              <article class="ledger-item ledger-edit-item" data-entry-id="${entry.id}">
+                <div class="ledger-edit-grid">
+                  <select class="select" data-edit-kind>
+                    <option value="expense" ${entry.kind === "expense" ? "selected" : ""}>支出</option>
+                    <option value="income" ${entry.kind === "income" ? "selected" : ""}>收入</option>
+                  </select>
+                  <input class="input" data-edit-amount type="number" min="0" step="0.01" inputmode="decimal" value="${Number(entry.amount)}" />
+                  <select class="select" data-edit-category>
+                    ${renderLedgerCategoryOptions(entry.category)}
+                  </select>
+                  <input class="input" data-edit-note type="text" maxlength="36" value="${escapeHTML(entry.note ?? "")}" placeholder="备注，可不填" />
+                  <div class="ledger-edit-actions">
+                    <button class="ghost-btn" type="button" data-action="cancel-entry-edit">取消</button>
+                    <button class="primary-btn" type="button" data-action="save-entry">保存</button>
+                  </div>
+                </div>
+              </article>
+            `;
+          }
+
+          return `
+          <article class="ledger-item" data-entry-id="${entry.id}">
+            <div class="item-body">
+              <p class="item-title">${escapeHTML(entry.category)}${entry.note ? ` · ${escapeHTML(entry.note)}` : ""}</p>
+              <p class="item-meta">${formatTime(entry.createdAt)}</p>
+            </div>
+            <span class="ledger-amount ${entry.kind}">${entry.kind === "expense" ? "-" : "+"}${formatMoney(entry.amount)}</span>
+            <div class="entry-actions">
+              <button class="icon-btn" type="button" aria-label="编辑记录" data-action="edit-entry">
+                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              </button>
+              <button class="icon-btn" type="button" aria-label="删除记录" data-action="delete-entry">
+                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M7 6l1 14h8l1-14" />
+                </svg>
+              </button>
+            </div>
+          </article>
+        `;
+        }).join("");
+    }
+
+    function renderCategoryStats(entries, totalExpense) {
+      const categoryStats = document.querySelector("#categoryStats");
+      const totals = entries
+        .filter((entry) => entry.kind === "expense")
+        .reduce((result, entry) => {
+          result[entry.category] = (result[entry.category] ?? 0) + Number(entry.amount);
+          return result;
+        }, {});
+      const rows = Object.entries(totals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      if (!rows.length) {
+        categoryStats.innerHTML = `<div class="empty-state" style="padding: 14px 0 0;">这个周期还没有支出分类。噜噜暂时查无案情。</div>`;
+        return;
+      }
+
+      categoryStats.innerHTML = rows.map(([category, amount]) => {
+        const percent = totalExpense ? Math.max(4, Math.round((amount / totalExpense) * 100)) : 0;
+        return `
+          <div class="category-row">
+            <div>
+              <p class="category-name">${escapeHTML(category)}</p>
+              <div class="category-bar" aria-hidden="true">
+                <div class="category-bar-fill" style="width: ${percent}%;"></div>
+              </div>
+            </div>
+            <span class="category-amount">${formatMoney(amount)}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderDecisions() {
+      document.querySelectorAll("[data-decision-mode]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.decisionMode === state.decisionMode);
+      });
+      renderWheelFromTextarea();
+
+      const history = document.querySelector("#decisionHistory");
+      if (!state.decisions.length) {
+        history.innerHTML = `<div class="empty-state">还没有决定。纠结的历史暂时清白。</div>`;
+        return;
+      }
+
+      history.innerHTML = state.decisions.slice(0, 6).map((decision) => `
+        <article class="decision-item">
+          <div class="item-body">
+            <p class="item-title">${escapeHTML(decision.choice)}</p>
+            <p class="item-meta">${formatTime(decision.createdAt)} · ${escapeHTML(decision.modeLabel)}</p>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function getDecisionOptionsFromTextarea() {
+      return document.querySelector("#decisionOptions").value
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    function renderWheel(options) {
+      const wheel = document.querySelector("#decisionWheel");
+      const wheelCenter = document.querySelector("#wheelCenter");
+      const wheelSvg = document.querySelector("#wheelSvg");
+      const safeOptions = options.length ? options : ["选项", "转盘"];
+
+      wheel.style.setProperty("--wheel-rotation", `${state.wheelRotation}deg`);
+      wheelSvg.innerHTML = safeOptions.map((option, index) => {
+        const segmentSize = 360 / safeOptions.length;
+        const startAngle = index * segmentSize;
+        const endAngle = (index + 1) * segmentSize;
+        const labelAngle = startAngle + segmentSize / 2;
+        const color = wheelColors[index % wheelColors.length];
+        const path = describeWheelSlice(startAngle, endAngle, 96, 34);
+        const labelPoint = polarPoint(100, 100, safeOptions.length > 9 ? 63 : 66, labelAngle);
+        let textAngle = labelAngle;
+
+        if (textAngle > 90 && textAngle < 270) {
+          textAngle += 180;
+        }
+
+        const label = option.length > 5 ? `${option.slice(0, 5)}…` : option;
+        const fontSize = safeOptions.length > 10 ? 8 : safeOptions.length > 7 ? 9 : 10;
+        return `
+          <path d="${path}" fill="${color}" stroke="rgba(255,255,255,0.62)" stroke-width="1.2"></path>
+          <text x="${labelPoint.x}" y="${labelPoint.y}" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${textAngle} ${labelPoint.x} ${labelPoint.y})">${escapeHTML(label)}</text>
+        `;
+      }).join("");
+      wheelCenter.innerHTML = safeOptions.length <= 2
+        ? "选项<br />转盘"
+        : `${safeOptions.length} 个<br />选项`;
+    }
+
+    function polarPoint(centerX, centerY, radius, angle) {
+      const radians = (angle - 90) * Math.PI / 180;
+      return {
+        x: centerX + radius * Math.cos(radians),
+        y: centerY + radius * Math.sin(radians)
+      };
+    }
+
+    function describeWheelSlice(startAngle, endAngle, outerRadius, innerRadius) {
+      const outerStart = polarPoint(100, 100, outerRadius, startAngle);
+      const outerEnd = polarPoint(100, 100, outerRadius, endAngle);
+      const innerEnd = polarPoint(100, 100, innerRadius, endAngle);
+      const innerStart = polarPoint(100, 100, innerRadius, startAngle);
+      const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+
+      return [
+        `M ${outerStart.x} ${outerStart.y}`,
+        `A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${outerEnd.x} ${outerEnd.y}`,
+        `L ${innerEnd.x} ${innerEnd.y}`,
+        `A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${innerStart.x} ${innerStart.y}`,
+        "Z"
+      ].join(" ");
+    }
+
+    function renderWheelFromTextarea() {
+      renderWheel(getDecisionOptionsFromTextarea());
+    }
+
+    function renderMine() {
+      const days = Math.max(1, Math.ceil((Date.now() - state.settings.startedAt) / (24 * 60 * 60 * 1000)));
+      const todoCount = state.todos.length;
+      const entryCount = state.entries.length;
+
+      document.querySelector("#companionText").textContent = `你和噜噜已经互相忍受了 ${days} 天。`;
+      document.querySelector("#dataSummary").textContent = `${todoCount} 条待办，${entryCount} 条账本记录，${state.decisions.length} 次决定。`;
+      document.querySelectorAll("[data-personality]").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.personality === state.settings.personality);
+      });
+      document.querySelector("#themeInput").checked = state.settings.theme === "dark";
+      document.querySelector("#autoTalkInput").checked = state.settings.autoTalk;
+      document.querySelector("#petSizeInput").value = state.settings.petSize;
+      document.querySelector("#dailyBudgetInput").value = state.settings.dailyBudget;
+      document.querySelector("#monthlyBudgetInput").value = state.settings.monthlyBudget;
+    }
+
+    function renderAll() {
+      renderHome();
+      renderTodos();
+      renderLedger();
+      renderDecisions();
+      renderMine();
+    }
+
+    function addTodo(text, repeat = "none") {
+      state.todos.unshift({
+        id: createId(),
+        text,
+        dueDate: state.selectedTodoDate,
+        repeat,
+        done: false,
+        createdAt: Date.now(),
+        completedAt: null
+      });
+      saveTodos();
+      renderAll();
+
+      const selectedActiveCount = state.todos.filter((todo) => getTodoDate(todo) === state.selectedTodoDate && !todo.done).length;
+      if (selectedActiveCount >= 8) {
+        petReact("talk", "你这是待办，还是人生副本列表？");
+      } else if (repeat !== "none") {
+        petReact("talk", `${getRepeatLabel(repeat)}，收到。未来的你被安排得明明白白。`);
+      } else if (state.selectedTodoDate !== getISODate()) {
+        petReact("talk", `${formatTodoDateLabel(state.selectedTodoDate)}的事我记下了。未来的你先别急着逃。`);
+      } else {
+        petReact("talk", pickOne(petLines.todoAdded));
+      }
+    }
+
+    function createNextRepeatTodo(todo) {
+      if ((todo.repeat ?? "none") === "none") return null;
+
+      const currentDate = getTodoDate(todo);
+      if (todo.generatedNextFor === currentDate) {
+        return null;
+      }
+
+      const nextDate = getNextRepeatDate(todo);
+      if (!nextDate) return null;
+
+      todo.generatedNextFor = currentDate;
+      return {
+        id: createId(),
+        text: todo.text,
+        dueDate: nextDate,
+        repeat: todo.repeat,
+        repeatRootId: todo.repeatRootId ?? todo.id,
+        done: false,
+        createdAt: Date.now(),
+        completedAt: null
+      };
+    }
+
+    function toggleTodo(todoId) {
+      const todo = state.todos.find((item) => item.id === todoId);
+      if (!todo) return;
+
+      todo.done = !todo.done;
+      todo.completedAt = todo.done ? Date.now() : null;
+      const nextRepeatTodo = todo.done ? createNextRepeatTodo(todo) : null;
+      if (nextRepeatTodo) {
+        state.todos.unshift(nextRepeatTodo);
+      }
+      saveTodos();
+      renderAll();
+
+      if (todo.done) {
+        const doneToday = state.todos.filter((item) => item.done && getTodoDate(item) === getISODate()).length;
+        const leftToday = state.todos.filter((item) => !item.done && getTodoDate(item) === getISODate()).length;
+        const clearedToday = getTodoDate(todo) === getISODate() && doneToday > 0 && leftToday === 0;
+        const shouldCelebrate = clearedToday || (doneToday > 0 && doneToday % 3 === 0);
+        const line = shouldCelebrate
+          ? clearedToday
+            ? "今日清空。噜噜表面淡定，心里已经开始放礼花。"
+            : `今天第 ${doneToday} 件，噜噜宣布你暂时赢了生活一小局。`
+          : nextRepeatTodo
+            ? `这次完成了。下一次我已经放到${formatTodoDateLabel(nextRepeatTodo.dueDate)}，别装没看见。`
+            : pickOne(petLines.todoDone);
+
+        petReact(shouldCelebrate ? "happyBig" : "happy", line);
+      } else {
+        petReact("talk", "又反悔了？行，人生允许撤回。");
+      }
+    }
+
+    function deleteTodo(todoId) {
+      state.todos = state.todos.filter((todo) => todo.id !== todoId);
+      saveTodos();
+      renderAll();
+      petReact("talk", pickOne(petLines.todoDeleted));
+    }
+
+    function addLedgerEntry(entry) {
+      state.entries.unshift(entry);
+      saveEntries();
+      renderAll();
+
+      const todaySpend = sumEntries((item) => item.kind === "expense" && isToday(item.createdAt));
+      const monthSpend = sumEntries((item) => item.kind === "expense" && getMonthKey(new Date(item.createdAt)) === getMonthKey());
+      if (entry.kind === "expense" && state.settings.dailyBudget > 0 && todaySpend > state.settings.dailyBudget) {
+        petReact("talk", pickOne(petLines.budgetWarning), 4200);
+      } else if (entry.kind === "expense" && state.settings.monthlyBudget > 0 && monthSpend > state.settings.monthlyBudget) {
+        petReact("talk", "本月预算也被你踩线了。钱包现在很想静静。", 4200);
+      } else {
+        petReact("talk", pickOne(petLines.ledgerAdded));
+      }
+    }
+
+    function updateLedgerEntry(entryId, updates) {
+      const entry = state.entries.find((item) => item.id === entryId);
+      if (!entry) return;
+
+      Object.assign(entry, updates, { updatedAt: Date.now() });
+      state.editingEntryId = null;
+      saveEntries();
+      renderAll();
+      petReact("talk", "改好了。账本接受这次口供修正。");
+    }
+
+    function deleteLedgerEntry(entryId) {
+      state.entries = state.entries.filter((entry) => entry.id !== entryId);
+      if (state.editingEntryId === entryId) {
+        state.editingEntryId = null;
+      }
+      saveEntries();
+      renderAll();
+      petReact("talk", "删掉了。账本假装什么都没发生。");
+    }
+
+    function spinWheelTo(index, optionsLength) {
+      const segmentSize = 360 / optionsLength;
+      const segmentCenter = index * segmentSize + segmentSize / 2;
+      const fullTurns = 1440 + Math.floor(Math.random() * 2) * 360;
+      state.wheelRotation += fullTurns + (360 - segmentCenter);
+      renderWheelFromTextarea();
+    }
+
+    function decide(options) {
+      const choiceIndex = Math.floor(Math.random() * options.length);
+      const choice = options[choiceIndex];
+      const modeLabel = {
+        gentle: "认真",
+        random: "随缘",
+        roast: "毒舌"
+      }[state.decisionMode];
+
+      const comments = {
+        gentle: [
+          "这个选择现在看起来最稳。先走一步，再根据结果调整。",
+          "别把决定想成终点，它只是下一步。",
+          "选它吧，剩下的交给执行。"
+        ],
+        random: [
+          "宇宙小声指了这个。",
+          "随机之神刚刚打了个响指。",
+          "就它了，别问，问就是气氛到了。"
+        ],
+        roast: [
+          "你纠结这么久，最后还不是要我来。",
+          "选它。再纠结下去，选项都要睡着了。",
+          "这个答案不一定完美，但比原地内耗强。"
+        ]
+      };
+
+      const comment = pickOne(comments[state.decisionMode]);
+      state.decisions.unshift({
+        id: createId(),
+        choice,
+        modeLabel,
+        createdAt: Date.now()
+      });
+      state.decisions = state.decisions.slice(0, 20);
+      saveDecisions();
+      window.clearTimeout(decisionTimer);
+      spinWheelTo(choiceIndex, options.length);
+
+      document.querySelector("#decisionChoice").textContent = "转动中...";
+      document.querySelector("#decisionComment").textContent = "噜噜正在装作认真计算。";
+      document.querySelector("#decisionResult").classList.add("is-visible");
+      renderDecisions();
+      document.querySelector("#wheelCenter").textContent = "转动中";
+
+      decisionTimer = window.setTimeout(() => {
+        document.querySelector("#decisionChoice").textContent = choice;
+        document.querySelector("#decisionComment").textContent = comment;
+        document.querySelector("#wheelCenter").textContent = choice;
+        petReact("talk", `噜噜选：${choice}。${comment}`, 5200);
+      }, 1850);
+    }
+
+    function getPetSize() {
+      return document.querySelector("#deskPet").getBoundingClientRect().width;
+    }
+
+    function getPetBounds() {
+      const shellRect = document.querySelector(".app-shell").getBoundingClientRect();
+      const navRect = document.querySelector(".bottom-nav").getBoundingClientRect();
+      const petSize = getPetSize();
+      const inset = 8;
+
+      return {
+        minX: shellRect.left + inset,
+        maxX: shellRect.right - petSize - inset,
+        minY: inset,
+        maxY: Math.max(inset, navRect.top - petSize - inset)
+      };
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function clampPosition(position) {
+      const bounds = getPetBounds();
+      return {
+        x: clamp(position.x, bounds.minX, bounds.maxX),
+        y: clamp(position.y, bounds.minY, bounds.maxY)
+      };
+    }
+
+    function getDefaultPetPosition() {
+      const bounds = getPetBounds();
+      return {
+        x: bounds.maxX - 6,
+        y: bounds.maxY - 10
+      };
+    }
+
+    function readSavedPetPosition() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE.petPosition));
+        if (Number.isFinite(saved?.x) && Number.isFinite(saved?.y)) {
+          return saved;
+        }
+      } catch (error) {
+        localStorage.removeItem(STORAGE.petPosition);
+      }
+
+      return null;
+    }
+
+    function savePetPosition() {
+      localStorage.setItem(STORAGE.petPosition, JSON.stringify({
+        x: Math.round(dragState.petX),
+        y: Math.round(dragState.petY)
+      }));
+    }
+
+    function setPetPosition(position) {
+      const deskPet = document.querySelector("#deskPet");
+      const nextPosition = clampPosition(position);
+
+      dragState.petX = nextPosition.x;
+      dragState.petY = nextPosition.y;
+      deskPet.style.setProperty("--pet-x", `${nextPosition.x}px`);
+      deskPet.style.setProperty("--pet-y", `${nextPosition.y}px`);
+      updateBubblePlacement();
+    }
+
+    function updateBubblePlacement() {
+      const deskPet = document.querySelector("#deskPet");
+      const petSize = getPetSize();
+      const petCenter = dragState.petX + petSize / 2;
+      const shellRect = document.querySelector(".app-shell").getBoundingClientRect();
+
+      deskPet.classList.toggle("is-near-left", petCenter < shellRect.left + 120);
+      deskPet.classList.toggle("is-near-right", petCenter > shellRect.right - 120);
+      deskPet.classList.toggle("is-near-top", dragState.petY < 92);
+    }
+
+    function applyPetSize() {
+      document.documentElement.style.setProperty("--pet-size", `${state.settings.petSize}px`);
+      setPetPosition({ x: dragState.petX, y: dragState.petY });
+      savePetPosition();
+    }
+
+    function preloadPetImages() {
+      Object.values(petImages).forEach((asset) => {
+        const image = new Image();
+        image.src = asset.src;
+        if (asset.fallbackSrc) {
+          const fallback = new Image();
+          fallback.src = asset.fallbackSrc;
+        }
+      });
+    }
+
+    function setPetImage(stateName) {
+      const petImage = document.querySelector("#petImage");
+      const asset = petImages[stateName];
+
+      currentPetState = stateName;
+      petImage.dataset.fallbackSrc = asset.fallbackSrc ?? "";
+      petImage.src = asset.src;
+      petImage.alt = asset.alt;
+    }
+
+    function showBubble(text, duration = 3200) {
+      const deskPet = document.querySelector("#deskPet");
+      const petBubble = document.querySelector("#petBubble");
+
+      window.clearTimeout(bubbleTimer);
+      petBubble.textContent = text;
+      updateBubblePlacement();
+      deskPet.classList.add("is-talking");
+
+      bubbleTimer = window.setTimeout(() => {
+        deskPet.classList.remove("is-talking");
+      }, duration);
+    }
+
+    function hideBubble() {
+      window.clearTimeout(bubbleTimer);
+      document.querySelector("#deskPet").classList.remove("is-talking");
+    }
+
+    function schedulePetIdle(delay = 1800) {
+      window.clearTimeout(petRestoreTimer);
+      petRestoreTimer = window.setTimeout(() => {
+        if (!dragState.active) {
+          setPetImage("idle");
+        }
+      }, delay);
+    }
+
+    function petReact(kind, text, duration) {
+      if (kind === "happy" || kind === "happyBig") {
+        setPetImage(kind);
+        showBubble(text, duration ?? 3400);
+        schedulePetIdle(kind === "happyBig" ? 2600 : 1900);
+        return;
+      }
+
+      if (currentPetState === "sad") {
+        setPetImage("idle");
+      }
+      showBubble(text, duration);
+    }
+
+    function sayRandomLine() {
+      petReact("talk", pickRandomLine());
+    }
+
+    function sayInterruptedLine() {
+      setPetImage("idle");
+      showBubble(pickOne(petLines.interrupted));
+    }
+
+    function wasAwayMoreThanThreeDays() {
+      const lastOpenedAt = Number(localStorage.getItem(STORAGE.lastOpenedAt));
+      return Boolean(lastOpenedAt) && Date.now() - lastOpenedAt > THREE_DAYS_MS;
+    }
+
+    function markOpenedNow() {
+      localStorage.setItem(STORAGE.lastOpenedAt, String(Date.now()));
+    }
+
+    function startDrag(event) {
+      if (event.pointerType === "mouse" && event.button !== 0) {
+        return;
+      }
+
+      const deskPet = document.querySelector("#deskPet");
+      const petButton = event.currentTarget;
+
+      dragState.active = true;
+      dragState.pointerId = event.pointerId;
+      dragState.startClientX = event.clientX;
+      dragState.startClientY = event.clientY;
+      dragState.startPetX = dragState.petX;
+      dragState.startPetY = dragState.petY;
+      dragState.moved = false;
+
+      petButton.setPointerCapture(event.pointerId);
+      deskPet.classList.add("is-dragging");
+      hideBubble();
+      window.clearTimeout(petRestoreTimer);
+      setPetImage("grabbed");
+      event.preventDefault();
+    }
+
+    function moveDrag(event) {
+      if (!dragState.active || event.pointerId !== dragState.pointerId) {
+        return;
+      }
+
+      const dx = event.clientX - dragState.startClientX;
+      const dy = event.clientY - dragState.startClientY;
+
+      if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+        dragState.moved = true;
+      }
+
+      setPetPosition({
+        x: dragState.startPetX + dx,
+        y: dragState.startPetY + dy
+      });
+      event.preventDefault();
+    }
+
+    function finishDrag(event) {
+      if (!dragState.active || event.pointerId !== dragState.pointerId) {
+        return;
+      }
+
+      const deskPet = document.querySelector("#deskPet");
+      const petButton = event.currentTarget;
+      const shouldComplain = dragState.moved;
+
+      if (petButton.hasPointerCapture(event.pointerId)) {
+        petButton.releasePointerCapture(event.pointerId);
+      }
+
+      dragState.active = false;
+      dragState.pointerId = null;
+      deskPet.classList.remove("is-dragging");
+
+      if (shouldComplain) {
+        savePetPosition();
+        sayInterruptedLine();
+      } else {
+        setPetImage("idle");
+        sayRandomLine();
+      }
+
+      event.preventDefault();
+    }
+
+    function setupPetInteractions() {
+      const petButton = document.querySelector("#petButton");
+      const petImage = document.querySelector("#petImage");
+
+      petImage.addEventListener("error", () => {
+        const fallbackSrc = petImage.dataset.fallbackSrc;
+
+        if (fallbackSrc && !petImage.src.endsWith(fallbackSrc)) {
+          petImage.src = fallbackSrc;
+        }
+      });
+
+      petButton.addEventListener("pointerdown", startDrag);
+      petButton.addEventListener("pointermove", moveDrag);
+      petButton.addEventListener("pointerup", finishDrag);
+      petButton.addEventListener("pointercancel", finishDrag);
+      petButton.addEventListener("dragstart", (event) => event.preventDefault());
+      petButton.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          sayRandomLine();
+        }
+      });
+    }
+
+    function startAutoTalk() {
+      window.clearInterval(autoTalkTimer);
+      if (!state.settings.autoTalk) {
+        return;
+      }
+
+      autoTalkTimer = window.setInterval(() => {
+        if (!dragState.active && !document.querySelector("#deskPet").classList.contains("is-talking")) {
+          sayRandomLine();
+        }
+      }, 45000);
+    }
+
+    function setupNavigation() {
+      document.querySelectorAll("[data-nav], [data-go]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (button.dataset.focusDate) {
+            state.selectedTodoDate = button.dataset.focusDate;
+          }
+          if (button.dataset.focusScope) {
+            state.todoScope = button.dataset.focusScope;
+          }
+          switchView(button.dataset.nav ?? button.dataset.go);
+        });
+      });
+    }
+
+    function setupTodo() {
+      document.querySelector("#todoForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const input = document.querySelector("#todoInput");
+        const repeatInput = document.querySelector("#todoRepeatInput");
+        const text = input.value.trim();
+
+        if (!text) {
+          petReact("talk", "至少写点什么吧，空气我没法帮你完成。");
+          return;
+        }
+
+        addTodo(text, repeatInput.value);
+        input.value = "";
+        repeatInput.value = "none";
+        input.focus();
+      });
+
+      document.querySelectorAll("[data-todo-scope]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.todoScope = button.dataset.todoScope;
+          if (state.todoScope === "today") {
+            state.selectedTodoDate = getISODate();
+          }
+          if (state.todoScope === "tomorrow") {
+            state.selectedTodoDate = addDays(getISODate(), 1);
+          }
+          if (state.todoScope === "done") {
+            state.todoFilter = "done";
+          } else if (state.todoFilter === "done") {
+            state.todoFilter = "all";
+          }
+          renderAll();
+        });
+      });
+
+      document.querySelectorAll("[data-todo-filter]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.todoFilter = button.dataset.todoFilter;
+          renderTodos();
+        });
+      });
+
+      document.querySelectorAll("[data-todo-date-step]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedTodoDate = addDays(state.selectedTodoDate, Number(button.dataset.todoDateStep));
+          state.todoScope = "date";
+          renderAll();
+        });
+      });
+
+      document.querySelector("#todoDateInput").addEventListener("change", (event) => {
+        if (!event.target.value) return;
+        state.selectedTodoDate = event.target.value;
+        state.todoScope = "date";
+        renderAll();
+      });
+
+      document.querySelector("#todoTodayButton").addEventListener("click", () => {
+        state.selectedTodoDate = getISODate();
+        state.todoScope = "today";
+        renderAll();
+        petReact("talk", "回到今天。别担心，今天也没那么可怕。");
+      });
+
+      document.querySelector("#todoList").addEventListener("click", (event) => {
+        const actionButton = event.target.closest("[data-action]");
+        if (!actionButton) return;
+
+        const todoId = event.target.closest("[data-todo-id]")?.dataset.todoId;
+        if (!todoId) return;
+
+        if (actionButton.dataset.action === "toggle-todo") {
+          toggleTodo(todoId);
+        }
+        if (actionButton.dataset.action === "delete-todo") {
+          deleteTodo(todoId);
+        }
+      });
+    }
+
+    function setupLedger() {
+      document.querySelectorAll("[data-ledger-kind]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.ledgerKind = button.dataset.ledgerKind;
+          renderLedger();
+        });
+      });
+
+      document.querySelectorAll("[data-ledger-period]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.ledgerPeriod = button.dataset.ledgerPeriod;
+          renderLedger();
+        });
+      });
+
+      document.querySelector("#ledgerMonthInput").addEventListener("change", (event) => {
+        if (!event.target.value) return;
+        state.selectedLedgerMonth = event.target.value;
+        renderLedger();
+      });
+
+      document.querySelector("#ledgerYearInput").addEventListener("change", (event) => {
+        const year = Number(event.target.value);
+        if (!Number.isFinite(year)) return;
+        state.selectedLedgerYear = Math.min(2100, Math.max(2000, year));
+        renderLedger();
+      });
+
+      document.querySelector("#ledgerForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const amountInput = document.querySelector("#ledgerAmount");
+        const amount = Number(amountInput.value);
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+          petReact("talk", "金额得是正数。别拿玄学记账。");
+          return;
+        }
+
+        addLedgerEntry({
+          id: createId(),
+          kind: state.ledgerKind,
+          amount: Math.round(amount * 100) / 100,
+          category: document.querySelector("#ledgerCategory").value,
+          note: document.querySelector("#ledgerNote").value.trim(),
+          createdAt: Date.now()
+        });
+
+        amountInput.value = "";
+        document.querySelector("#ledgerNote").value = "";
+        amountInput.focus();
+      });
+
+      document.querySelector("#addLedgerCategoryButton").addEventListener("click", () => {
+        const input = document.querySelector("#ledgerCategoryInput");
+        addLedgerCategory(input.value);
+        input.value = "";
+      });
+
+      document.querySelector("#ledgerCategoryInput").addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        const input = event.currentTarget;
+        addLedgerCategory(input.value);
+        input.value = "";
+      });
+
+      document.querySelector("#ledgerCategoryChips").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-ledger-category-remove]");
+        if (!button) return;
+        removeLedgerCategory(button.dataset.ledgerCategoryRemove);
+      });
+
+      document.querySelector("#ledgerList").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-action]");
+        const entryId = event.target.closest("[data-entry-id]")?.dataset.entryId;
+        if (!button || !entryId) return;
+
+        if (button.dataset.action === "edit-entry") {
+          state.editingEntryId = entryId;
+          renderLedger();
+        }
+
+        if (button.dataset.action === "cancel-entry-edit") {
+          state.editingEntryId = null;
+          renderLedger();
+        }
+
+        if (button.dataset.action === "save-entry") {
+          const row = event.target.closest("[data-entry-id]");
+          const amount = Number(row.querySelector("[data-edit-amount]").value);
+          if (!Number.isFinite(amount) || amount <= 0) {
+            petReact("talk", "金额得是正数，账本不吃空气。");
+            return;
+          }
+          updateLedgerEntry(entryId, {
+            kind: row.querySelector("[data-edit-kind]").value,
+            amount: Math.round(amount * 100) / 100,
+            category: row.querySelector("[data-edit-category]").value,
+            note: row.querySelector("[data-edit-note]").value.trim()
+          });
+        }
+
+        if (button.dataset.action === "delete-entry") {
+          deleteLedgerEntry(entryId);
+        }
+      });
+    }
+
+    function setupDecider() {
+      document.querySelectorAll("[data-decision-preset]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const options = decisionPresets[button.dataset.decisionPreset];
+          document.querySelector("#decisionOptions").value = options.join("\n");
+          renderWheel(options);
+          petReact("talk", "转盘备好了。现在把命运交给噜噜。");
+        });
+      });
+
+      document.querySelectorAll("[data-decision-mode]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.decisionMode = button.dataset.decisionMode;
+          renderDecisions();
+        });
+      });
+
+      document.querySelector("#decisionOptions").addEventListener("input", renderWheelFromTextarea);
+
+      document.querySelector("#deciderForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const options = getDecisionOptionsFromTextarea();
+
+        if (options.length < 2) {
+          petReact("talk", "至少给我两个选项，不然这叫通知，不叫决定。");
+          return;
+        }
+
+        decide(options);
+      });
+    }
+
+    function setupMine() {
+      document.querySelector("#themeToggleButton").addEventListener("click", () => {
+        setTheme(state.settings.theme === "dark" ? "light" : "dark");
+      });
+
+      document.querySelectorAll("[data-personality]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.settings.personality = button.dataset.personality;
+          state.settings.roastMode = state.settings.personality !== "gentle";
+          saveSettings();
+          renderMine();
+          const lines = {
+            gentle: "温柔模式收到。我会把刺收起来一点。",
+            balanced: "平衡模式就位。该夸夸，该吐槽吐槽。",
+            roast: "毒舌模式回来了，注意防御。"
+          };
+          petReact("talk", lines[state.settings.personality]);
+        });
+      });
+
+      document.querySelector("#themeInput").addEventListener("change", (event) => {
+        setTheme(event.target.checked ? "dark" : "light");
+      });
+
+      document.querySelector("#autoTalkInput").addEventListener("change", (event) => {
+        state.settings.autoTalk = event.target.checked;
+        saveSettings();
+        startAutoTalk();
+        petReact("talk", state.settings.autoTalk ? "我会偶尔冒泡，别说我突然。" : "安静模式收到，我闭嘴一会儿。");
+      });
+
+      document.querySelector("#petSizeInput").addEventListener("input", (event) => {
+        state.settings.petSize = Number(event.target.value);
+        saveSettings();
+        applyPetSize();
+      });
+
+      document.querySelector("#dailyBudgetInput").addEventListener("change", (event) => {
+        state.settings.dailyBudget = Math.max(0, Number(event.target.value) || 0);
+        saveSettings();
+        renderAll();
+        petReact("talk", "预算记下了。钱包听见应该会松口气。");
+      });
+
+      document.querySelector("#monthlyBudgetInput").addEventListener("change", (event) => {
+        state.settings.monthlyBudget = Math.max(0, Number(event.target.value) || 0);
+        saveSettings();
+        renderAll();
+        petReact("talk", "月度预算也记下了。这个月别太放飞。");
+      });
+
+      document.querySelector("#exportDataButton").addEventListener("click", exportData);
+
+      document.querySelector("#importDataButton").addEventListener("click", () => {
+        document.querySelector("#importDataInput").click();
+      });
+
+      document.querySelector("#importDataInput").addEventListener("change", (event) => {
+        importDataFile(event.target.files?.[0]);
+        event.target.value = "";
+      });
+
+      document.querySelector("#resetPetButton").addEventListener("click", () => {
+        setPetPosition(getDefaultPetPosition());
+        savePetPosition();
+        petReact("talk", "我回来了。别再把我塞到奇怪角落。");
+      });
+
+      document.querySelector("#clearDataButton").addEventListener("click", () => {
+        const confirmed = window.confirm("确定清空待办、账本和决定历史吗？");
+        if (!confirmed) return;
+
+        state.todos = [];
+        state.entries = [];
+        state.decisions = [];
+        saveTodos();
+        saveEntries();
+        saveDecisions();
+        document.querySelector("#decisionResult").classList.remove("is-visible");
+        renderAll();
+        petReact("talk", "清空了。现在我们假装一切刚刚开始。");
+      });
+    }
+
+    function setupResizeHandling() {
+      window.addEventListener("resize", () => {
+        setPetPosition({
+          x: dragState.petX,
+          y: dragState.petY
+        });
+        savePetPosition();
+      });
+    }
+
+    function initPetPosition() {
+      document.documentElement.style.setProperty("--pet-size", `${state.settings.petSize}px`);
+      const savedPosition = readSavedPetPosition();
+      setPetPosition(savedPosition ?? getDefaultPetPosition());
+      document.querySelector("#deskPet").classList.add("is-ready");
+    }
+
+    function initApp() {
+      loadState();
+      applyTheme();
+      document.querySelector("#todayText").textContent = formatToday();
+      preloadPetImages();
+      initPetPosition();
+      setupPetInteractions();
+      setupNavigation();
+      setupTodo();
+      setupLedger();
+      setupDecider();
+      setupMine();
+      setupPWA();
+      setupResizeHandling();
+      renderAll();
+      startAutoTalk();
+
+      if (wasAwayMoreThanThreeDays()) {
+        setPetImage("sad");
+        showBubble(pickOne(petLines.sad), 5200);
+      } else {
+        setPetImage("idle");
+      }
+
+      markOpenedNow();
+    }
+
+    document.addEventListener("DOMContentLoaded", initApp);
+  </script>
+</body>
+</html>
