@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#f8f8fb" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Spark" />
+  <meta name="apple-mobile-web-app-title" content="噜噜 Life" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="images/app-icon-180.png" />
-  <title>Spark</title>
+  <title>噜噜 Life</title>
   <script>
     (() => {
       try {
@@ -157,12 +157,14 @@
       background: linear-gradient(145deg, var(--warm), var(--rose));
       box-shadow: 0 12px 24px rgba(232, 93, 42, 0.28);
       flex: 0 0 auto;
+      overflow: hidden;
     }
 
-    .brand-mark svg {
-      width: 23px;
-      height: 23px;
-      fill: currentColor;
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
     }
 
     .brand-title {
@@ -1475,13 +1477,11 @@
 <body>
   <div class="app-shell">
     <header class="top-bar" aria-label="应用顶部">
-      <div class="brand" aria-label="Spark">
+      <div class="brand" aria-label="噜噜 Life">
         <div class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 2.5 14.8 9l6.7 3-6.7 3L12 21.5 9.2 15l-6.7-3 6.7-3L12 2.5Z" />
-          </svg>
+          <img src="images/lulu-life-logo.png" alt="" />
         </div>
-        <h1 class="brand-title">Spark</h1>
+        <h1 class="brand-title">噜噜 Life</h1>
       </div>
       <div class="top-actions">
         <p class="today" id="todayText">今天</p>
@@ -1536,7 +1536,7 @@
             <button class="ghost-btn" id="homeFocusButton" type="button" data-go="todo">去处理</button>
           </div>
           <p class="focus-text" id="homeFocusText">今天还没形成压力，很适合轻轻启动。</p>
-          <p class="focus-meta" id="homeFocusMeta">Spark 会根据待办、预算和账单更新建议。</p>
+          <p class="focus-meta" id="homeFocusMeta">噜噜 Life 会根据待办、预算和账单更新建议。</p>
           <div class="signal-list" id="homeSignals"></div>
         </section>
 
@@ -1712,7 +1712,7 @@
         <div class="hero-panel panel">
           <p class="eyebrow">记账</p>
           <h2 class="page-title" id="ledgerTitle">钱不是没了，是出去社交了</h2>
-          <p class="page-copy">轻量记一笔就好，Spark 不做会计考试。</p>
+          <p class="page-copy">轻量记一笔就好，噜噜 Life 不做会计考试。</p>
         </div>
 
         <form class="form-panel panel" id="ledgerForm">
@@ -1982,7 +1982,7 @@
               <div class="setting-actions">
                 <button class="ghost-btn" id="exportDataButton" type="button">导出</button>
                 <button class="ghost-btn" id="importDataButton" type="button">导入</button>
-                <input class="hidden-file" id="importDataInput" type="file" accept="application/json,.json" aria-label="导入 Spark 备份" />
+                <input class="hidden-file" id="importDataInput" type="file" accept="application/json,.json" aria-label="导入噜噜 Life 备份" />
               </div>
             </div>
             <div class="setting-row">
@@ -2067,7 +2067,7 @@
   </nav>
 
   <script>
-    const APP_VERSION = "1.3.0";
+    const APP_VERSION = "1.4.0";
     const BACKUP_VERSION = 1;
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
     const DRAG_THRESHOLD = 8;
@@ -2175,7 +2175,7 @@
         "三天没来，你是把我寄存在云端了吗？",
         "我都快蔫成橘子皮了，终于想起我了。",
         "这几天我很淡定，淡定到有点委屈。",
-        "欢迎回来，差点以为 Spark 只剩我守家。"
+        "欢迎回来，差点以为噜噜 Life 只剩我守家。"
       ]
     };
 
@@ -2292,7 +2292,7 @@
 
     function getBackupPayload() {
       return {
-        app: "Spark",
+        app: "噜噜 Life",
         backupVersion: BACKUP_VERSION,
         appVersion: APP_VERSION,
         exportedAt: new Date().toISOString(),
@@ -2318,7 +2318,7 @@
         String(now.getHours()).padStart(2, "0"),
         String(now.getMinutes()).padStart(2, "0")
       ].join("");
-      return `spark-backup-${date}-${time}.json`;
+      return `lulu-life-backup-${date}-${time}.json`;
     }
 
     function exportData() {
@@ -2407,7 +2407,7 @@
           applyImportedData(payload);
           petReact("talk", "导入完成。噜噜把旧账本搬进来了。");
         } catch (error) {
-          petReact("talk", "这个备份文件我读不懂，可能不是 Spark 的。");
+          petReact("talk", "这个备份文件我读不懂，可能不是噜噜 Life 的。");
         }
       });
       reader.addEventListener("error", () => {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "spark-offline-v20260513-3";
+const CACHE_NAME = "spark-offline-v20260513-4";
 
 const APP_SHELL = [
   "./",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./images/app-icon-192.png",
   "./images/app-icon-512.png",
   "./images/app-icon-maskable-512.png",
+  "./images/lulu-life-logo.png",
   "./images/normal.gif",
   "./images/grabbed.gif",
   "./images/happy.gif",
