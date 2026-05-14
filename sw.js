@@ -1,4 +1,4 @@
-const CACHE_NAME = "spark-offline-v20260513-6";
+const CACHE_NAME = "spark-offline-v20260514-1";
 
 const APP_SHELL = [
   "./",

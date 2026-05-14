@@ -741,6 +741,121 @@
       font-weight: 720;
     }
 
+    .couple-card-grid,
+    .couple-member-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .couple-card,
+    .couple-member-card {
+      min-height: 92px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+    }
+
+    .couple-card-title,
+    .couple-member-name {
+      margin: 0;
+      color: var(--text);
+      font-size: 0.98rem;
+      font-weight: 880;
+    }
+
+    .couple-card-value {
+      margin: 9px 0 0;
+      color: var(--text-soft);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      font-weight: 720;
+    }
+
+    .presence-pill {
+      min-height: 26px;
+      margin-top: 10px;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--field);
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 820;
+    }
+
+    .presence-pill.is-online {
+      color: #1f7a4d;
+      background: rgba(123, 211, 137, 0.18);
+    }
+
+    html[data-theme="dark"] .presence-pill.is-online {
+      color: #9be7aa;
+    }
+
+    .couple-gate {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .couple-form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .couple-form-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .couple-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 18px 18px;
+    }
+
+    .couple-list-item,
+    .plan-item,
+    .note-item {
+      padding: 15px 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .plan-item.is-done .item-title,
+    .couple-list-item.is-done .item-title {
+      color: color-mix(in srgb, var(--text) 48%, transparent);
+      text-decoration: line-through;
+    }
+
+    .category-badge {
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: var(--warm-deep);
+      background: rgba(255, 122, 69, 0.12);
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .invite-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.04em;
+    }
+
     .form-row {
       display: flex;
       gap: 10px;
@@ -1652,7 +1767,9 @@
       .health-action-row,
       .health-form-grid,
       .health-log-grid,
-      .sync-form-grid {
+      .sync-form-grid,
+      .couple-card-grid,
+      .couple-member-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1763,7 +1880,7 @@
             </span>
           </button>
 
-          <button class="quick-tile" type="button" data-go="health">
+          <button class="quick-tile" type="button" data-go="couple">
             <span class="quick-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <path d="M20 11.5c0 5-5.2 8-8 9.5-2.8-1.5-8-4.5-8-9.5A4.7 4.7 0 0 1 12 8a4.7 4.7 0 0 1 8 3.5Z" />
@@ -1772,8 +1889,8 @@
               </svg>
             </span>
             <span>
-              <span class="quick-title">姨妈记录</span>
-              <span class="quick-note">记录周期、状态和小提醒。</span>
+              <span class="quick-title">情侣空间</span>
+              <span class="quick-note">共同计划、姨妈和小纸条。</span>
             </span>
           </button>
 
@@ -2037,12 +2154,124 @@
         </section>
       </section>
 
-      <section class="main-view" id="healthView" data-view="health" aria-labelledby="healthTitle">
+      <section class="main-view" id="coupleView" data-view="couple" aria-labelledby="coupleTitle">
         <div class="hero-panel panel">
-          <p class="eyebrow">健康</p>
-          <h2 class="page-title" id="healthTitle">把身体的小信号记下来</h2>
-          <p class="page-copy">姨妈记录、状态打卡和周期预测都在这里。噜噜负责提醒，不负责装医生。</p>
+          <p class="eyebrow">情侣空间</p>
+          <h2 class="page-title" id="coupleTitle">把两个人的小生活放在一起</h2>
+          <p class="page-copy" id="coupleHeroCopy">登录后可以绑定情侣空间，共同待办、姨妈记录、计划清单和小纸条都会出现在这里。</p>
         </div>
+
+        <section class="panel" id="coupleAuthPanel" aria-labelledby="coupleAuthTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="coupleAuthTitle">登录噜噜 Life</h3>
+              <p class="section-note" id="coupleAuthNote">先在“我的”里保存 Supabase 项目地址和 publishable key，然后用邮箱登录。</p>
+            </div>
+          </div>
+          <div class="couple-gate">
+            <form class="couple-form" id="coupleAuthForm">
+              <input class="input" id="coupleEmailInput" type="email" placeholder="邮箱" autocomplete="email" />
+              <input class="input" id="couplePasswordInput" type="password" placeholder="密码" autocomplete="current-password" />
+              <input class="input" id="coupleNicknameInput" type="text" maxlength="16" placeholder="昵称，比如：阿杰" autocomplete="nickname" />
+              <div class="couple-form-actions">
+                <button class="ghost-btn" id="coupleGoConfigButton" type="button" data-go="mine">去配置</button>
+                <button class="ghost-btn" id="coupleLoginButton" type="button">登录</button>
+                <button class="primary-btn" id="coupleSignupButton" type="submit">注册</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="panel" id="coupleBindPanel" aria-labelledby="coupleBindTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="coupleBindTitle">绑定情侣空间</h3>
+              <p class="section-note">一个人创建空间，另一个人输入邀请码加入。</p>
+            </div>
+          </div>
+          <div class="couple-gate">
+            <div class="couple-form">
+              <input class="input" id="coupleNameInput" type="text" maxlength="20" placeholder="空间名字，比如：我们的噜噜窝" />
+              <input class="input invite-code" id="coupleInviteInput" type="text" maxlength="18" placeholder="输入对方的邀请码" />
+              <div class="couple-form-actions">
+                <button class="ghost-btn" id="joinCoupleButton" type="button">加入空间</button>
+                <button class="primary-btn" id="createCoupleButton" type="button">创建空间</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="coupleDashboardPanel" aria-labelledby="coupleDashboardTitle">
+          <div class="section-head">
+            <div>
+              <h3 class="section-title" id="coupleDashboardTitle">共同看板</h3>
+              <p class="section-note" id="coupleDashboardNote">在线状态每 30 秒同步一次。</p>
+            </div>
+          </div>
+          <div class="preview-grid">
+            <div class="couple-member-grid" id="coupleMemberGrid"></div>
+            <div class="couple-card-grid" id="coupleBoardGrid"></div>
+          </div>
+          <div class="couple-toolbar">
+            <p class="section-note">邀请码：<span class="invite-code" id="coupleInviteCodeText">--</span></p>
+            <div class="setting-actions">
+              <button class="ghost-btn" id="importLocalToCoupleButton" type="button">导入本机待办和健康</button>
+              <button class="ghost-btn" id="refreshCoupleButton" type="button">刷新空间</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-panel panel" id="sharedTodoPanel" aria-labelledby="sharedTodoTitle">
+          <div class="section-head" style="padding: 0 0 16px;">
+            <div>
+              <h3 class="section-title" id="sharedTodoTitle">共同待办</h3>
+              <p class="section-note">两个人都能看到和完成的事情。</p>
+            </div>
+          </div>
+          <form class="health-form-grid" id="sharedTodoForm">
+            <input class="input full-row" id="sharedTodoInput" type="text" maxlength="60" placeholder="比如：周末买水果" autocomplete="off" />
+            <input class="input" id="sharedTodoDateInput" type="date" />
+            <button class="primary-btn" type="submit">添加共同待办</button>
+          </form>
+          <div class="list" id="sharedTodoList"></div>
+        </section>
+
+        <section class="form-panel panel" id="couplePlanPanel" aria-labelledby="couplePlanTitle">
+          <div class="section-head" style="padding: 0 0 16px;">
+            <div>
+              <h3 class="section-title" id="couplePlanTitle">计划清单</h3>
+              <p class="section-note">想吃、想玩、想买、约会计划，先丢进这里。</p>
+            </div>
+          </div>
+          <form class="health-form-grid" id="couplePlanForm">
+            <select class="select" id="couplePlanCategory">
+              <option value="eat">想吃</option>
+              <option value="play">想玩</option>
+              <option value="buy">想买</option>
+              <option value="date">约会计划</option>
+              <option value="other">其他</option>
+            </select>
+            <input class="input" id="couplePlanTitleInput" type="text" maxlength="36" placeholder="比如：去吃烤肉" autocomplete="off" />
+            <input class="input" id="couplePlanDateInput" type="date" />
+            <input class="input full-row" id="couplePlanNoteInput" type="text" maxlength="60" placeholder="备注，可不填" autocomplete="off" />
+            <button class="primary-btn full-row" type="submit">加入计划清单</button>
+          </form>
+          <div class="list" id="couplePlanList"></div>
+        </section>
+
+        <section class="form-panel panel" id="coupleNotePanel" aria-labelledby="coupleNoteTitle">
+          <div class="section-head" style="padding: 0 0 16px;">
+            <div>
+              <h3 class="section-title" id="coupleNoteTitle">情侣小纸条</h3>
+              <p class="section-note">不用像聊天一样严肃，想到什么就贴一下。</p>
+            </div>
+          </div>
+          <form class="couple-form" id="coupleNoteForm">
+            <textarea class="textarea" id="coupleNoteInput" maxlength="160" placeholder="写一句想让对方看到的话。"></textarea>
+            <button class="primary-btn" type="submit">贴上小纸条</button>
+          </form>
+          <div class="list" id="coupleNoteList"></div>
+        </section>
 
         <section class="health-status-panel panel" aria-labelledby="periodStatusTitle">
           <div class="health-status-card">
@@ -2297,14 +2526,14 @@
         <section class="panel" aria-labelledby="syncTitle">
           <div class="section-head">
             <div>
-              <h3 class="section-title" id="syncTitle">情侣同步</h3>
-              <p class="section-note">健康记录和待办可以同步到你们两台手机；记账仍只保存在各自手机里。</p>
+              <h3 class="section-title" id="syncTitle">账号与情侣空间</h3>
+              <p class="section-note">保存 Supabase 配置后，就能用邮箱登录和绑定情侣空间。</p>
             </div>
           </div>
           <div class="sync-form">
             <div class="sync-status-card">
               <p class="sync-status-title" id="syncStatusTitle">本机模式</p>
-              <p class="sync-status-note" id="syncStatusText">填入 Supabase 地址、公开 publishable/anon key 和情侣同步码后，就可以开始同步。</p>
+              <p class="sync-status-note" id="syncStatusText">填入 Supabase 地址和 publishable key 后，可以在情侣空间登录。</p>
             </div>
             <div class="sync-form-grid">
               <label class="health-field full-row" for="syncUrlInput">
@@ -2315,15 +2544,16 @@
                 <span>Supabase publishable / anon key</span>
                 <input class="input" id="syncAnonKeyInput" type="password" placeholder="sb_publishable_... 或 legacy anon key" autocomplete="off" />
               </label>
-              <label class="health-field full-row" for="syncRoomCodeInput">
-                <span>情侣同步码</span>
-                <input class="input" id="syncRoomCodeInput" type="password" maxlength="80" placeholder="两台手机输入同一句暗号" autocomplete="off" />
+              <label class="health-field full-row" for="profileNicknameInput">
+                <span>我的昵称</span>
+                <input class="input" id="profileNicknameInput" type="text" maxlength="16" placeholder="比如：阿杰" autocomplete="nickname" />
               </label>
+              <input id="syncRoomCodeInput" type="hidden" value="" />
             </div>
             <div class="sync-actions">
-              <button class="ghost-btn" id="syncDisconnectButton" type="button">断开</button>
-              <button class="ghost-btn" id="syncNowButton" type="button">立即同步</button>
-              <button class="primary-btn" id="syncSaveButton" type="button">保存同步</button>
+              <button class="ghost-btn" id="authLogoutButton" type="button">退出登录</button>
+              <button class="ghost-btn" id="syncNowButton" type="button">刷新空间</button>
+              <button class="primary-btn" id="syncSaveButton" type="button">保存配置</button>
             </div>
           </div>
         </section>
@@ -2414,13 +2644,13 @@
       <span class="nav-label">记账</span>
     </button>
 
-    <button class="nav-item" type="button" data-nav="health">
+    <button class="nav-item" type="button" data-nav="couple">
       <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M20 11.5c0 5-5.2 8-8 9.5-2.8-1.5-8-4.5-8-9.5A4.7 4.7 0 0 1 12 8a4.7 4.7 0 0 1 8 3.5Z" />
         <path d="M12 8V4" />
         <path d="M9.5 4h5" />
       </svg>
-      <span class="nav-label">健康</span>
+      <span class="nav-label">情侣</span>
     </button>
 
     <button class="nav-item" type="button" data-nav="mine">
@@ -2433,7 +2663,7 @@
   </nav>
 
   <script>
-    const APP_VERSION = "1.5.0";
+    const APP_VERSION = "1.6.0";
     const BACKUP_VERSION = 2;
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
     const DRAG_THRESHOLD = 8;
@@ -2464,6 +2694,15 @@
     };
     const SYNC_PAYLOAD_VERSION = 1;
     const SYNC_TABLE_NAME = "lulu_sync";
+    const COUPLE_POLL_INTERVAL_MS = 30000;
+    const COUPLE_ONLINE_MS = 75000;
+    const PLAN_CATEGORY_LABELS = {
+      eat: "想吃",
+      play: "想玩",
+      buy: "想买",
+      date: "约会计划",
+      other: "其他"
+    };
     const STORAGE = {
       todos: "spark:todos",
       entries: "spark:ledger-entries",
@@ -2471,6 +2710,7 @@
       settings: "spark:settings",
       periodRecords: "spark:period-records",
       syncSettings: "spark:sync-settings",
+      authSession: "spark:auth-session",
       lastOpenedAt: "spark:last-opened-at",
       petPosition: "spark:desk-pet-position"
     };
@@ -2491,6 +2731,7 @@
       enabled: false,
       supabaseUrl: "",
       anonKey: "",
+      nickname: "",
       roomCode: "",
       roomHash: "",
       deviceId: "",
@@ -2626,6 +2867,15 @@
       entries: [],
       decisions: [],
       periodRecords: [],
+      couplePeriodRecords: [],
+      coupleSharedTodos: [],
+      couplePlans: [],
+      coupleNotes: [],
+      authSession: null,
+      authUser: null,
+      profile: null,
+      couple: null,
+      coupleMembers: [],
       syncSettings: { ...defaultSyncSettings },
       syncStatus: "本机模式",
       settings: { ...defaultSettings }
@@ -2650,6 +2900,8 @@
     let sharedSyncTimer = null;
     let sharedSyncInProgress = false;
     let sharedSyncSuppressed = false;
+    let couplePollTimer = null;
+    let coupleSyncInProgress = false;
     let deferredInstallPrompt = null;
     let currentPetState = "idle";
 
@@ -2684,9 +2936,10 @@
       const normalized = {
         ...defaultSyncSettings,
         ...settings,
-        enabled: Boolean(settings.enabled),
+        enabled: false,
         supabaseUrl: String(settings.supabaseUrl || "").trim().replace(/\/+$/, ""),
         anonKey: String(settings.anonKey || "").trim(),
+        nickname: String(settings.nickname || "").trim().slice(0, 16),
         roomCode: String(settings.roomCode || ""),
         roomHash: String(settings.roomHash || ""),
         deviceId: String(settings.deviceId || "").trim() || createId(),
@@ -2760,6 +3013,8 @@
       state.periodRecords = loadJSON(STORAGE.periodRecords, []).map(normalizePeriodRecord);
       state.syncSettings = normalizeSyncSettings(loadJSON(STORAGE.syncSettings, {}));
       state.syncStatus = state.syncSettings.lastStatus || "本机模式";
+      state.authSession = normalizeAuthSession(loadJSON(STORAGE.authSession, null));
+      state.authUser = state.authSession?.user ?? null;
       const savedSettings = loadJSON(STORAGE.settings, {});
       const hasStartedAt = Number.isFinite(savedSettings.startedAt);
       state.settings = {
@@ -2807,6 +3062,25 @@
 
     function saveSyncSettingsLocal() {
       saveJSON(STORAGE.syncSettings, state.syncSettings);
+    }
+
+    function normalizeAuthSession(session) {
+      if (!session || typeof session !== "object" || !session.access_token) return null;
+      return {
+        ...session,
+        expires_at: Number(session.expires_at) || Math.floor(Date.now() / 1000) + Number(session.expires_in || 3600),
+        user: session.user ?? null
+      };
+    }
+
+    function saveAuthSession(session) {
+      state.authSession = normalizeAuthSession(session);
+      state.authUser = state.authSession?.user ?? null;
+      if (state.authSession) {
+        saveJSON(STORAGE.authSession, state.authSession);
+      } else {
+        localStorage.removeItem(STORAGE.authSession);
+      }
     }
 
     function getBackupPayload() {
@@ -3221,8 +3495,24 @@
       return state.todos.filter((todo) => !todo.deletedAt);
     }
 
+    function isSupabaseConfigured() {
+      return Boolean(state.syncSettings.supabaseUrl && state.syncSettings.anonKey);
+    }
+
+    function isLoggedIn() {
+      return Boolean(state.authSession?.access_token && state.authUser?.id);
+    }
+
+    function isCoupleReady() {
+      return Boolean(isLoggedIn() && state.couple?.id);
+    }
+
+    function getPeriodStore() {
+      return isCoupleReady() ? state.couplePeriodRecords : state.periodRecords;
+    }
+
     function getLivePeriodRecords() {
-      return state.periodRecords
+      return getPeriodStore()
         .filter((record) => !record.deletedAt)
         .sort((a, b) => b.startDate.localeCompare(a.startDate) || b.updatedAt - a.updatedAt);
     }
@@ -3372,7 +3662,7 @@
           text: "身体正在占用一部分能量，今天适合少一点硬扛，多一点热乎和休息。",
           meta: "噜噜建议：记录一下状态，别把不舒服当成背景音。",
           button: "去健康",
-          view: "health",
+          view: "couple",
           date: today,
           scope: "today"
         };
@@ -3383,7 +3673,7 @@
           text: "提前准备一点，比到时候临场发挥舒服很多。",
           meta: `预计日期：${formatTodoDateLabel(periodSummary.nextStart)}`,
           button: "看健康",
-          view: "health",
+          view: "couple",
           date: today,
           scope: "today"
         };
@@ -3794,7 +4084,7 @@
 
     function getCurrentPeriodFormRecord() {
       if (!state.editingPeriodId) return null;
-      return state.periodRecords.find((record) => record.id === state.editingPeriodId && !record.deletedAt) ?? null;
+      return getPeriodStore().find((record) => record.id === state.editingPeriodId && !record.deletedAt) ?? null;
     }
 
     function renderPeriodSymptomChips(selected = []) {
@@ -3896,7 +4186,7 @@
       };
     }
 
-    function savePeriodFromForm() {
+    async function savePeriodFromForm() {
       const startDate = document.querySelector("#periodStartInput").value;
       const endDate = document.querySelector("#periodEndInput").value || null;
 
@@ -3910,36 +4200,58 @@
       }
 
       const editingRecord = getCurrentPeriodFormRecord();
+      let savedRecord = editingRecord;
       if (editingRecord) {
         editingRecord.startDate = startDate;
         editingRecord.endDate = endDate;
         editingRecord.updatedAt = Date.now();
         state.editingPeriodId = null;
       } else {
-        state.periodRecords.unshift(createPeriodRecord(startDate, endDate));
+        const record = createPeriodRecord(startDate, endDate);
+        if (isCoupleReady()) {
+          record.createdBy = state.authUser.id;
+          state.couplePeriodRecords.unshift(record);
+        } else {
+          state.periodRecords.unshift(record);
+        }
+        savedRecord = record;
       }
 
       state.selectedPeriodDate = startDate;
-      savePeriodRecords();
+      if (isCoupleReady()) {
+        await saveCouplePeriodRecord(savedRecord);
+      } else {
+        savePeriodRecords();
+      }
       renderAll();
       petReact(endDate ? "talk" : "sad", endDate ? pickOne(petLines.periodDone) : pickOne(petLines.period));
     }
 
-    function startPeriodToday() {
+    async function startPeriodToday() {
       const today = getISODate();
       if (getActivePeriodRecord(today)) {
         petReact("talk", "已经在记录中了，不用重复按。身体不是打卡机。");
         return;
       }
-      state.periodRecords.unshift(createPeriodRecord(today));
+      const record = createPeriodRecord(today);
+      if (isCoupleReady()) {
+        record.createdBy = state.authUser.id;
+        state.couplePeriodRecords.unshift(record);
+      } else {
+        state.periodRecords.unshift(record);
+      }
       state.selectedPeriodDate = today;
       state.editingPeriodId = null;
-      savePeriodRecords();
+      if (isCoupleReady()) {
+        await saveCouplePeriodRecord(record);
+      } else {
+        savePeriodRecords();
+      }
       renderAll();
       petReact("sad", pickOne(petLines.period));
     }
 
-    function endPeriodToday() {
+    async function endPeriodToday() {
       const today = getISODate();
       const activeRecord = getActivePeriodRecord(today);
       if (!activeRecord) {
@@ -3948,13 +4260,17 @@
       }
       activeRecord.endDate = today;
       activeRecord.updatedAt = Date.now();
-      savePeriodRecords();
+      if (isCoupleReady()) {
+        await saveCouplePeriodRecord(activeRecord);
+      } else {
+        savePeriodRecords();
+      }
       renderAll();
       petReact("happy", pickOne(petLines.periodDone));
     }
 
     function editPeriodRecord(recordId) {
-      const record = state.periodRecords.find((item) => item.id === recordId && !item.deletedAt);
+      const record = getPeriodStore().find((item) => item.id === recordId && !item.deletedAt);
       if (!record) return;
       state.editingPeriodId = recordId;
       state.selectedPeriodDate = record.startDate;
@@ -3962,20 +4278,24 @@
       petReact("talk", "我把这次记录摊开了，改完记得保存。");
     }
 
-    function deletePeriodRecord(recordId) {
-      const record = state.periodRecords.find((item) => item.id === recordId);
+    async function deletePeriodRecord(recordId) {
+      const record = getPeriodStore().find((item) => item.id === recordId);
       if (!record) return;
       record.deletedAt = Date.now();
       record.updatedAt = record.deletedAt;
       if (state.editingPeriodId === recordId) {
         state.editingPeriodId = null;
       }
-      savePeriodRecords();
+      if (isCoupleReady()) {
+        await saveCouplePeriodRecord(record);
+      } else {
+        savePeriodRecords();
+      }
       renderAll();
       petReact("talk", "这条周期记录删掉了。噜噜会重新估算。");
     }
 
-    function savePeriodDailyLog() {
+    async function savePeriodDailyLog() {
       const date = document.querySelector("#periodLogDateInput").value || getISODate();
       if (!isValidISODate(date)) {
         petReact("talk", "这个日期不太对，噜噜的小本子写不进去。");
@@ -4001,7 +4321,11 @@
       };
       record.updatedAt = Date.now();
       state.selectedPeriodDate = date;
-      savePeriodRecords();
+      if (isCoupleReady()) {
+        await saveCouplePeriodRecord(record);
+      } else {
+        savePeriodRecords();
+      }
       renderAll();
       petReact("talk", "当天状态记好了。今天对身体好一点，别硬撑。");
     }
@@ -4154,12 +4478,14 @@
       renderAll();
     }
 
-    function getSupabaseHeaders() {
+    function getSupabaseHeaders(options = {}) {
       const headers = {
         apikey: state.syncSettings.anonKey,
         "Content-Type": "application/json"
       };
-      if (state.syncSettings.anonKey.startsWith("eyJ")) {
+      if (options.auth && state.authSession?.access_token) {
+        headers.Authorization = `Bearer ${state.authSession.access_token}`;
+      } else if (state.syncSettings.anonKey.startsWith("eyJ")) {
         headers.Authorization = `Bearer ${state.syncSettings.anonKey}`;
       }
       return headers;
@@ -4234,7 +4560,7 @@
     async function saveSharedSyncSettingsFromForm() {
       const supabaseUrl = document.querySelector("#syncUrlInput").value.trim().replace(/\/+$/, "");
       const anonKey = document.querySelector("#syncAnonKeyInput").value.trim();
-      const roomCode = document.querySelector("#syncRoomCodeInput").value.trim();
+      const roomCode = document.querySelector("#syncRoomCodeInput")?.value.trim() || state.syncSettings.roomCode || "";
 
       if (!supabaseUrl || !anonKey || !roomCode) {
         state.syncSettings = normalizeSyncSettings({
@@ -4292,6 +4618,565 @@
           queueSharedSync(700);
         }
       });
+    }
+
+    function getSupabaseBaseUrl() {
+      return state.syncSettings.supabaseUrl.replace(/\/+$/, "");
+    }
+
+    async function supabaseRequest(path, options = {}) {
+      if (!isSupabaseConfigured()) {
+        throw new Error("SUPABASE_NOT_CONFIGURED");
+      }
+      const response = await fetch(`${getSupabaseBaseUrl()}${path}`, {
+        method: options.method || "GET",
+        headers: {
+          ...getSupabaseHeaders({ auth: options.auth }),
+          ...(options.headers || {})
+        },
+        body: options.body === undefined ? undefined : JSON.stringify(options.body)
+      });
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (error) {
+        data = text ? { message: text } : null;
+      }
+      if (!response.ok) {
+        const message = data?.msg || data?.message || data?.error_description || data?.error || `HTTP_${response.status}`;
+        throw new Error(message);
+      }
+      return data;
+    }
+
+    function getPreferredNickname() {
+      return state.syncSettings.nickname || state.profile?.nickname || state.authUser?.email?.split("@")[0] || "我";
+    }
+
+    function authStatusText() {
+      if (!isSupabaseConfigured()) return "还没保存 Supabase 配置。";
+      if (!isLoggedIn()) return "已保存配置，去情侣空间登录。";
+      if (!state.couple) return `${getPreferredNickname()} 已登录，还没有绑定情侣空间。`;
+      return `${getPreferredNickname()} 已登录：${state.couple.name}`;
+    }
+
+    async function restoreAuthSession() {
+      if (!state.authSession?.refresh_token || !isSupabaseConfigured()) return;
+      const expiresAt = Number(state.authSession.expires_at || 0) * 1000;
+      if (expiresAt > Date.now() + 60000) {
+        await afterAuthReady(false);
+        return;
+      }
+
+      try {
+        const session = await supabaseRequest("/auth/v1/token?grant_type=refresh_token", {
+          method: "POST",
+          body: { refresh_token: state.authSession.refresh_token }
+        });
+        saveAuthSession(session);
+        await afterAuthReady(false);
+      } catch (error) {
+        saveAuthSession(null);
+      }
+    }
+
+    async function signInWithPassword(email, password, nickname = "") {
+      const session = await supabaseRequest("/auth/v1/token?grant_type=password", {
+        method: "POST",
+        body: { email, password }
+      });
+      saveAuthSession(session);
+      if (nickname.trim()) {
+        state.syncSettings.nickname = nickname.trim().slice(0, 16);
+        saveSyncSettingsLocal();
+      }
+      await afterAuthReady(true);
+    }
+
+    async function signUpWithPassword(email, password, nickname = "") {
+      const result = await supabaseRequest("/auth/v1/signup", {
+        method: "POST",
+        body: {
+          email,
+          password,
+          data: { nickname: nickname.trim().slice(0, 16) }
+        }
+      });
+
+      if (result?.access_token) {
+        saveAuthSession(result);
+        state.syncSettings.nickname = nickname.trim().slice(0, 16) || state.syncSettings.nickname;
+        saveSyncSettingsLocal();
+        await afterAuthReady(true);
+        return;
+      }
+
+      petReact("talk", "注册好了。Supabase 可能发了确认邮件，点完邮件再回来登录。", 5200);
+    }
+
+    async function signOutAccount() {
+      try {
+        if (state.authSession?.access_token) {
+          await supabaseRequest("/auth/v1/logout", { method: "POST", auth: true });
+        }
+      } catch (error) {
+        // 本地退出优先，网络失败也不要卡住用户。
+      }
+      saveAuthSession(null);
+      state.profile = null;
+      state.couple = null;
+      state.coupleMembers = [];
+      state.coupleSharedTodos = [];
+      state.couplePlans = [];
+      state.coupleNotes = [];
+      state.couplePeriodRecords = [];
+      stopCouplePolling();
+      renderAll();
+      petReact("talk", "退出了。情侣空间先关门，本机记录还在。");
+    }
+
+    async function afterAuthReady(shouldTalk = false) {
+      await upsertProfile();
+      await loadProfileAndCouple();
+      if (state.couple) {
+        await loadCoupleData();
+        startCouplePolling();
+      }
+      renderAll();
+      if (shouldTalk) {
+        petReact("talk", state.couple ? "登录好了，情侣空间开门。" : "登录好了。下一步绑定情侣空间。");
+      }
+    }
+
+    async function upsertProfile() {
+      if (!isLoggedIn()) return;
+      const now = new Date().toISOString();
+      const nickname = getPreferredNickname();
+      const rows = await supabaseRequest("/rest/v1/profiles?on_conflict=id", {
+        method: "POST",
+        auth: true,
+        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+        body: [{
+          id: state.authUser.id,
+          email: state.authUser.email,
+          nickname,
+          last_seen_at: now,
+          updated_at: now
+        }]
+      });
+      state.profile = rows?.[0] ?? state.profile;
+    }
+
+    async function loadProfileAndCouple() {
+      if (!isLoggedIn()) return;
+      const profileRows = await supabaseRequest(`/rest/v1/profiles?id=eq.${encodeURIComponent(state.authUser.id)}&select=*`, { auth: true });
+      state.profile = profileRows?.[0] ?? state.profile;
+
+      const memberRows = await supabaseRequest(`/rest/v1/couple_members?user_id=eq.${encodeURIComponent(state.authUser.id)}&select=couple_id,role,joined_at`, { auth: true });
+      const member = memberRows?.[0];
+      if (!member?.couple_id) {
+        state.couple = null;
+        state.coupleMembers = [];
+        return;
+      }
+
+      const coupleRows = await supabaseRequest(`/rest/v1/couples?id=eq.${encodeURIComponent(member.couple_id)}&select=*`, { auth: true });
+      state.couple = coupleRows?.[0] ?? null;
+      await loadCoupleMembers();
+    }
+
+    async function loadCoupleMembers() {
+      if (!state.couple?.id) return;
+      const members = await supabaseRequest(`/rest/v1/couple_members?couple_id=eq.${encodeURIComponent(state.couple.id)}&select=user_id,role,joined_at`, { auth: true });
+      const ids = (members || []).map((member) => member.user_id).filter(Boolean);
+      let profiles = [];
+      if (ids.length) {
+        profiles = await supabaseRequest(`/rest/v1/profiles?id=in.(${ids.join(",")})&select=*`, { auth: true });
+      }
+      state.coupleMembers = (members || []).map((member) => ({
+        ...member,
+        profile: profiles.find((profile) => profile.id === member.user_id) ?? null
+      }));
+    }
+
+    function generateInviteCode() {
+      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "LULU-";
+      for (let index = 0; index < 6; index += 1) {
+        code += alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+      return code;
+    }
+
+    async function createCoupleSpace() {
+      if (!isLoggedIn()) {
+        petReact("talk", "先登录，再开情侣空间。");
+        return;
+      }
+      const name = document.querySelector("#coupleNameInput").value.trim() || "我们的噜噜窝";
+      const inviteCode = generateInviteCode();
+      await supabaseRequest("/rest/v1/rpc/create_couple_space", {
+        method: "POST",
+        auth: true,
+        body: { p_name: name, p_invite_code: inviteCode }
+      });
+      await loadProfileAndCouple();
+      await loadCoupleData();
+      startCouplePolling();
+      renderAll();
+      petReact("happy", `情侣空间开好了，邀请码是 ${inviteCode}`);
+    }
+
+    async function joinCoupleSpace() {
+      if (!isLoggedIn()) {
+        petReact("talk", "先登录，再输入邀请码。");
+        return;
+      }
+      const inviteCode = document.querySelector("#coupleInviteInput").value.trim().toUpperCase();
+      if (!inviteCode) {
+        petReact("talk", "先填邀请码，空气不是邀请码。");
+        return;
+      }
+      await supabaseRequest("/rest/v1/rpc/join_couple_by_invite", {
+        method: "POST",
+        auth: true,
+        body: { p_invite_code: inviteCode }
+      });
+      await loadProfileAndCouple();
+      await loadCoupleData();
+      startCouplePolling();
+      renderAll();
+      petReact("happy", "加入成功。情侣空间正式合体。");
+    }
+
+    function rowToTodo(row) {
+      return normalizeTodoRecord({
+        id: row.id,
+        text: row.text,
+        dueDate: row.due_date,
+        repeat: "none",
+        done: row.done,
+        createdAt: new Date(row.created_at).getTime(),
+        completedAt: row.completed_at ? new Date(row.completed_at).getTime() : null,
+        updatedAt: new Date(row.updated_at).getTime(),
+        deletedAt: row.deleted_at ? new Date(row.deleted_at).getTime() : null,
+        createdBy: row.created_by
+      });
+    }
+
+    function todoToRow(todo) {
+      return {
+        id: todo.id,
+        couple_id: state.couple.id,
+        text: todo.text,
+        due_date: getTodoDate(todo),
+        done: Boolean(todo.done),
+        completed_at: todo.completedAt ? new Date(todo.completedAt).toISOString() : null,
+        created_at: new Date(todo.createdAt || Date.now()).toISOString(),
+        updated_at: new Date(todo.updatedAt || Date.now()).toISOString(),
+        deleted_at: todo.deletedAt ? new Date(todo.deletedAt).toISOString() : null,
+        created_by: todo.createdBy || state.authUser.id,
+        updated_by: state.authUser.id
+      };
+    }
+
+    function rowToPeriod(row) {
+      return normalizePeriodRecord({
+        id: row.id,
+        startDate: row.start_date,
+        endDate: row.end_date,
+        dailyLogs: row.daily_logs || {},
+        createdAt: new Date(row.created_at).getTime(),
+        updatedAt: new Date(row.updated_at).getTime(),
+        deletedAt: row.deleted_at ? new Date(row.deleted_at).getTime() : null,
+        createdBy: row.created_by
+      });
+    }
+
+    function periodToRow(record) {
+      return {
+        id: record.id,
+        couple_id: state.couple.id,
+        start_date: record.startDate,
+        end_date: record.endDate,
+        daily_logs: record.dailyLogs || {},
+        created_at: new Date(record.createdAt || Date.now()).toISOString(),
+        updated_at: new Date(record.updatedAt || Date.now()).toISOString(),
+        deleted_at: record.deletedAt ? new Date(record.deletedAt).toISOString() : null,
+        created_by: record.createdBy || state.authUser.id,
+        updated_by: state.authUser.id
+      };
+    }
+
+    function rowToPlan(row) {
+      return {
+        id: row.id,
+        category: row.category,
+        title: row.title,
+        note: row.note || "",
+        targetDate: row.target_date || null,
+        done: Boolean(row.done),
+        createdAt: new Date(row.created_at).getTime(),
+        updatedAt: new Date(row.updated_at).getTime(),
+        deletedAt: row.deleted_at ? new Date(row.deleted_at).getTime() : null,
+        createdBy: row.created_by
+      };
+    }
+
+    function planToRow(plan) {
+      return {
+        id: plan.id,
+        couple_id: state.couple.id,
+        category: plan.category,
+        title: plan.title,
+        note: plan.note || "",
+        target_date: plan.targetDate || null,
+        done: Boolean(plan.done),
+        created_at: new Date(plan.createdAt || Date.now()).toISOString(),
+        updated_at: new Date(plan.updatedAt || Date.now()).toISOString(),
+        deleted_at: plan.deletedAt ? new Date(plan.deletedAt).toISOString() : null,
+        created_by: plan.createdBy || state.authUser.id,
+        updated_by: state.authUser.id
+      };
+    }
+
+    function rowToNote(row) {
+      return {
+        id: row.id,
+        body: row.body,
+        createdAt: new Date(row.created_at).getTime(),
+        updatedAt: new Date(row.updated_at).getTime(),
+        deletedAt: row.deleted_at ? new Date(row.deleted_at).getTime() : null,
+        createdBy: row.created_by
+      };
+    }
+
+    function noteToRow(note) {
+      return {
+        id: note.id,
+        couple_id: state.couple.id,
+        body: note.body,
+        created_at: new Date(note.createdAt || Date.now()).toISOString(),
+        updated_at: new Date(note.updatedAt || Date.now()).toISOString(),
+        deleted_at: note.deletedAt ? new Date(note.deletedAt).toISOString() : null,
+        created_by: note.createdBy || state.authUser.id
+      };
+    }
+
+    async function loadCoupleData() {
+      if (!isCoupleReady() || coupleSyncInProgress) return;
+      coupleSyncInProgress = true;
+      try {
+        await loadCoupleMembers();
+        const coupleId = encodeURIComponent(state.couple.id);
+        const [todos, periods, plans, notes] = await Promise.all([
+          supabaseRequest(`/rest/v1/shared_todos?couple_id=eq.${coupleId}&deleted_at=is.null&select=*&order=done.asc,due_date.asc,created_at.desc`, { auth: true }),
+          supabaseRequest(`/rest/v1/period_records?couple_id=eq.${coupleId}&deleted_at=is.null&select=*&order=start_date.desc`, { auth: true }),
+          supabaseRequest(`/rest/v1/couple_plan_items?couple_id=eq.${coupleId}&deleted_at=is.null&select=*&order=done.asc,updated_at.desc`, { auth: true }),
+          supabaseRequest(`/rest/v1/couple_notes?couple_id=eq.${coupleId}&deleted_at=is.null&select=*&order=created_at.desc&limit=8`, { auth: true })
+        ]);
+        state.coupleSharedTodos = (todos || []).map(rowToTodo);
+        state.couplePeriodRecords = (periods || []).map(rowToPeriod);
+        state.couplePlans = (plans || []).map(rowToPlan);
+        state.coupleNotes = (notes || []).map(rowToNote);
+        state.syncStatus = "情侣空间已同步";
+      } catch (error) {
+        state.syncStatus = "情侣空间同步失败";
+      } finally {
+        coupleSyncInProgress = false;
+        renderAll();
+      }
+    }
+
+    async function upsertRemote(tableName, row) {
+      await supabaseRequest(`/rest/v1/${tableName}?on_conflict=id`, {
+        method: "POST",
+        auth: true,
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: [row]
+      });
+    }
+
+    async function updatePresence() {
+      if (!isLoggedIn()) return;
+      try {
+        await upsertProfile();
+        if (state.couple) {
+          await loadCoupleMembers();
+        }
+      } catch (error) {
+        // 心跳失败不打扰使用。
+      }
+    }
+
+    function startCouplePolling() {
+      stopCouplePolling();
+      if (!isLoggedIn()) return;
+      updatePresence();
+      if (state.couple) loadCoupleData();
+      couplePollTimer = window.setInterval(() => {
+        updatePresence();
+        if (state.couple) loadCoupleData();
+      }, COUPLE_POLL_INTERVAL_MS);
+    }
+
+    function stopCouplePolling() {
+      window.clearInterval(couplePollTimer);
+      couplePollTimer = null;
+    }
+
+    async function addSharedTodo(text, dueDate) {
+      if (!isCoupleReady()) return;
+      const now = Date.now();
+      const todo = normalizeTodoRecord({
+        id: createId(),
+        text,
+        dueDate,
+        repeat: "none",
+        done: false,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+        createdBy: state.authUser.id
+      });
+      state.coupleSharedTodos.unshift(todo);
+      renderCouple();
+      await upsertRemote("shared_todos", todoToRow(todo));
+      await loadCoupleData();
+      petReact("talk", "共同待办放好了，两个人一起盯。");
+    }
+
+    async function toggleSharedTodo(todoId) {
+      const todo = state.coupleSharedTodos.find((item) => item.id === todoId);
+      if (!todo) return;
+      todo.done = !todo.done;
+      todo.completedAt = todo.done ? Date.now() : null;
+      todo.updatedAt = Date.now();
+      await upsertRemote("shared_todos", todoToRow(todo));
+      await loadCoupleData();
+      petReact(todo.done ? "happy" : "talk", todo.done ? "共同任务完成，噜噜给你们俩都记一分。" : "撤回完成，生活允许反悔。");
+    }
+
+    async function deleteSharedTodo(todoId) {
+      const todo = state.coupleSharedTodos.find((item) => item.id === todoId);
+      if (!todo) return;
+      todo.deletedAt = Date.now();
+      todo.updatedAt = todo.deletedAt;
+      await upsertRemote("shared_todos", todoToRow(todo));
+      await loadCoupleData();
+    }
+
+    async function addCouplePlan(category, title, note, targetDate) {
+      if (!isCoupleReady()) return;
+      const now = Date.now();
+      const plan = {
+        id: createId(),
+        category,
+        title,
+        note,
+        targetDate: targetDate || null,
+        done: false,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+        createdBy: state.authUser.id
+      };
+      state.couplePlans.unshift(plan);
+      renderCouple();
+      await upsertRemote("couple_plan_items", planToRow(plan));
+      await loadCoupleData();
+      petReact("talk", "计划先收进情侣空间，未来的你们来执行。");
+    }
+
+    async function toggleCouplePlan(planId) {
+      const plan = state.couplePlans.find((item) => item.id === planId);
+      if (!plan) return;
+      plan.done = !plan.done;
+      plan.updatedAt = Date.now();
+      await upsertRemote("couple_plan_items", planToRow(plan));
+      await loadCoupleData();
+    }
+
+    async function deleteCouplePlan(planId) {
+      const plan = state.couplePlans.find((item) => item.id === planId);
+      if (!plan) return;
+      plan.deletedAt = Date.now();
+      plan.updatedAt = plan.deletedAt;
+      await upsertRemote("couple_plan_items", planToRow(plan));
+      await loadCoupleData();
+    }
+
+    async function addCoupleNote(body) {
+      if (!isCoupleReady()) return;
+      const now = Date.now();
+      const note = {
+        id: createId(),
+        body,
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: null,
+        createdBy: state.authUser.id
+      };
+      state.coupleNotes.unshift(note);
+      renderCouple();
+      await upsertRemote("couple_notes", noteToRow(note));
+      await loadCoupleData();
+      petReact("talk", "小纸条贴好了。希望对方打开时嘴角有点动静。");
+    }
+
+    async function deleteCoupleNote(noteId) {
+      const note = state.coupleNotes.find((item) => item.id === noteId);
+      if (!note) return;
+      note.deletedAt = Date.now();
+      note.updatedAt = note.deletedAt;
+      await upsertRemote("couple_notes", noteToRow(note));
+      await loadCoupleData();
+    }
+
+    async function saveCouplePeriodRecord(record) {
+      if (!isCoupleReady()) return;
+      await upsertRemote("period_records", periodToRow(record));
+      await loadCoupleData();
+    }
+
+    async function importLocalToCouple() {
+      if (!isCoupleReady()) {
+        petReact("talk", "先登录并绑定情侣空间，再导入。");
+        return;
+      }
+      const confirmed = window.confirm("会把本机待办和健康记录复制到情侣空间，本机数据不会删除。继续吗？");
+      if (!confirmed) return;
+
+      const todoRows = getLiveTodos().map((todo) => todoToRow({
+        ...normalizeTodoRecord(todo),
+        createdBy: todo.createdBy || state.authUser.id,
+        updatedAt: Date.now()
+      }));
+      const periodRows = state.periodRecords.filter((record) => !record.deletedAt).map((record) => periodToRow({
+        ...normalizePeriodRecord(record),
+        createdBy: record.createdBy || state.authUser.id,
+        updatedAt: Date.now()
+      }));
+
+      if (todoRows.length) {
+        await supabaseRequest("/rest/v1/shared_todos?on_conflict=id", {
+          method: "POST",
+          auth: true,
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: todoRows
+        });
+      }
+      if (periodRows.length) {
+        await supabaseRequest("/rest/v1/period_records?on_conflict=id", {
+          method: "POST",
+          auth: true,
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: periodRows
+        });
+      }
+      await loadCoupleData();
+      petReact("happy", "导入完成。你们的小生活搬进情侣空间了。");
     }
 
     function getLedgerCategories(extra = [], includeEntryCategories = false) {
@@ -4624,17 +5509,178 @@
       document.querySelector("#monthlyBudgetInput").value = state.settings.monthlyBudget;
       setInputValueIfUnfocused("#syncUrlInput", state.syncSettings.supabaseUrl);
       setInputValueIfUnfocused("#syncAnonKeyInput", state.syncSettings.anonKey);
-      setInputValueIfUnfocused("#syncRoomCodeInput", state.syncSettings.roomCode);
-      document.querySelector("#syncStatusTitle").textContent = state.syncSettings.enabled ? state.syncStatus : "本机模式";
-      document.querySelector("#syncStatusText").textContent = state.syncSettings.enabled
-        ? state.syncSettings.lastStatus
-        : "填入 Supabase 地址、公开 publishable/anon key 和情侣同步码后，就可以开始同步。";
+      setInputValueIfUnfocused("#profileNicknameInput", state.syncSettings.nickname || state.profile?.nickname || "");
+      document.querySelector("#syncStatusTitle").textContent = isLoggedIn() ? "已登录" : isSupabaseConfigured() ? "已配置" : "本机模式";
+      document.querySelector("#syncStatusText").textContent = authStatusText();
+    }
+
+    function showElement(selector, visible) {
+      const element = document.querySelector(selector);
+      if (element) element.hidden = !visible;
+    }
+
+    function formatPresence(lastSeenAt) {
+      if (!lastSeenAt) return "还没上线";
+      const diff = Date.now() - new Date(lastSeenAt).getTime();
+      if (diff <= COUPLE_ONLINE_MS) return "在线";
+      const minutes = Math.max(1, Math.round(diff / 60000));
+      if (minutes < 60) return `${minutes} 分钟前在线`;
+      const hours = Math.round(minutes / 60);
+      return `${hours} 小时前在线`;
+    }
+
+    function isPresenceOnline(lastSeenAt) {
+      return Boolean(lastSeenAt && Date.now() - new Date(lastSeenAt).getTime() <= COUPLE_ONLINE_MS);
+    }
+
+    async function runAsyncAction(action, failPrefix = "操作失败") {
+      try {
+        await action();
+      } catch (error) {
+        petReact("talk", `${failPrefix}：${error.message}`, 5200);
+      }
+    }
+
+    function getNextCoupleCountdown() {
+      const today = getISODate();
+      return state.couplePlans
+        .filter((plan) => !plan.done && plan.targetDate && plan.targetDate >= today)
+        .sort((a, b) => a.targetDate.localeCompare(b.targetDate))[0] || null;
+    }
+
+    function formatCountdown(plan) {
+      if (!plan) return "先放一个值得期待的日子";
+      const diff = daysBetween(getISODate(), plan.targetDate);
+      if (diff === 0) return `今天：${plan.title}`;
+      if (diff === 1) return `明天：${plan.title}`;
+      return `${diff} 天后：${plan.title}`;
+    }
+
+    function memberName(member) {
+      if (member.user_id === state.authUser?.id) return `${member.profile?.nickname || getPreferredNickname()}（我）`;
+      return member.profile?.nickname || "对方";
+    }
+
+    function authorName(userId) {
+      if (userId === state.authUser?.id) return "我";
+      const member = state.coupleMembers.find((item) => item.user_id === userId);
+      return member?.profile?.nickname || "对方";
+    }
+
+    function renderCouple() {
+      const configured = isSupabaseConfigured();
+      const loggedIn = isLoggedIn();
+      const ready = isCoupleReady();
+      const summary = getPeriodSummary();
+      const activeSharedTodos = state.coupleSharedTodos.filter((todo) => !todo.done);
+      const doneSharedTodos = state.coupleSharedTodos.filter((todo) => todo.done);
+      const activePlans = state.couplePlans.filter((plan) => !plan.done);
+      const latestNote = state.coupleNotes[0];
+      const nextCountdown = getNextCoupleCountdown();
+
+      document.querySelector("#coupleHeroCopy").textContent = ready
+        ? `${state.couple.name} 已开启。共同待办、计划清单和姨妈记录会在这里同步。`
+        : configured
+          ? "登录后创建或加入情侣空间，把两个人的小生活放在一起。"
+          : "先去“我的”保存 Supabase 项目地址和 publishable key，再回来登录。";
+
+      showElement("#coupleAuthPanel", !loggedIn);
+      showElement("#coupleBindPanel", loggedIn && !ready);
+      showElement("#coupleDashboardPanel", ready);
+      showElement("#sharedTodoPanel", ready);
+      showElement("#couplePlanPanel", ready);
+      showElement("#coupleNotePanel", ready);
+
+      document.querySelector("#coupleGoConfigButton").hidden = configured;
+      document.querySelector("#coupleAuthNote").textContent = configured
+        ? "用邮箱注册或登录。第一次注册如果需要确认邮件，点完邮件再回来登录。"
+        : "先在“我的”里保存 Supabase 项目地址和 publishable key。";
+      setInputValueIfUnfocused("#coupleNicknameInput", state.syncSettings.nickname || "");
+      setInputValueIfUnfocused("#sharedTodoDateInput", getISODate());
+
+      if (!ready) return;
+
+      document.querySelector("#coupleDashboardNote").textContent = `${state.couple.name} · ${state.syncStatus || "等待同步"}`;
+      document.querySelector("#coupleInviteCodeText").textContent = state.couple.invite_code || "--";
+      document.querySelector("#coupleMemberGrid").innerHTML = state.coupleMembers.length
+        ? state.coupleMembers.map((member) => {
+          const online = isPresenceOnline(member.profile?.last_seen_at);
+          return `
+            <article class="couple-member-card">
+              <p class="couple-member-name">${escapeHTML(memberName(member))}</p>
+              <span class="presence-pill ${online ? "is-online" : ""}">${formatPresence(member.profile?.last_seen_at)}</span>
+            </article>
+          `;
+        }).join("")
+        : `<article class="couple-member-card"><p class="couple-member-name">还在等对方加入</p><span class="presence-pill">把邀请码发给她</span></article>`;
+
+      document.querySelector("#coupleBoardGrid").innerHTML = [
+        ["共同待办", activeSharedTodos.length ? `${activeSharedTodos.length} 件待处理` : "清清爽爽"],
+        ["姨妈状态", getSignalHealthLabel(summary)],
+        ["倒数日", formatCountdown(nextCountdown)],
+        ["计划清单", activePlans.length ? `${activePlans.length} 个想法` : "还没塞计划"],
+        ["最新纸条", latestNote ? `${authorName(latestNote.createdBy)}：${latestNote.body}` : "还没有小纸条"]
+      ].map(([title, value]) => `
+        <article class="couple-card">
+          <p class="couple-card-title">${escapeHTML(title)}</p>
+          <p class="couple-card-value">${escapeHTML(value)}</p>
+        </article>
+      `).join("");
+
+      document.querySelector("#sharedTodoList").innerHTML = state.coupleSharedTodos.length
+        ? state.coupleSharedTodos.slice(0, 12).map((todo) => `
+          <article class="couple-list-item ${todo.done ? "is-done" : ""}" data-shared-todo-id="${todo.id}">
+            <button class="todo-check" type="button" aria-label="${todo.done ? "标记未完成" : "标记完成"}" data-action="toggle-shared-todo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+            </button>
+            <div class="item-body">
+              <p class="item-title">${escapeHTML(todo.text)}</p>
+              <p class="item-meta">${formatTodoDateLabel(getTodoDate(todo))} · ${authorName(todo.createdBy)}</p>
+            </div>
+            <button class="icon-btn" type="button" aria-label="删除共同待办" data-action="delete-shared-todo">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M7 6l1 14h8l1-14" /></svg>
+            </button>
+          </article>
+        `).join("")
+        : `<div class="empty-state">共同待办还空着。可以先写一个“周末吃点好的”。</div>`;
+
+      document.querySelector("#couplePlanList").innerHTML = state.couplePlans.length
+        ? state.couplePlans.slice(0, 18).map((plan) => `
+          <article class="plan-item ${plan.done ? "is-done" : ""}" data-plan-id="${plan.id}">
+            <button class="todo-check" type="button" aria-label="${plan.done ? "标记未完成" : "标记完成"}" data-action="toggle-plan">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+            </button>
+            <div class="item-body">
+              <p class="item-title">${escapeHTML(plan.title)}</p>
+              <p class="item-meta"><span class="category-badge">${PLAN_CATEGORY_LABELS[plan.category] || "其他"}</span>${plan.targetDate ? ` · ${formatTodoDateLabel(plan.targetDate)}` : ""}${plan.note ? ` · ${escapeHTML(plan.note)}` : ""} · ${authorName(plan.createdBy)}</p>
+            </div>
+            <button class="icon-btn" type="button" aria-label="删除计划" data-action="delete-plan">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M7 6l1 14h8l1-14" /></svg>
+            </button>
+          </article>
+        `).join("")
+        : `<div class="empty-state">计划清单还空着。想吃想玩都可以先扔进来。</div>`;
+
+      document.querySelector("#coupleNoteList").innerHTML = state.coupleNotes.length
+        ? state.coupleNotes.slice(0, 8).map((note) => `
+          <article class="note-item" data-note-id="${note.id}">
+            <div class="item-body">
+              <p class="item-title">${escapeHTML(note.body)}</p>
+              <p class="item-meta">${authorName(note.createdBy)} · ${formatTime(note.createdAt)}</p>
+            </div>
+            <button class="icon-btn" type="button" aria-label="删除小纸条" data-action="delete-note">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M7 6l1 14h8l1-14" /></svg>
+            </button>
+          </article>
+        `).join("")
+        : `<div class="empty-state">还没有小纸条。可以贴一句“今天也辛苦啦”。</div>`;
     }
 
     function renderAll() {
       renderHome();
       renderTodos();
       renderLedger();
+      renderCouple();
       renderHealth();
       renderDecisions();
       renderMine();
@@ -5209,11 +6255,11 @@
     }
 
     function setupHealth() {
-      document.querySelector("#periodStartTodayButton").addEventListener("click", startPeriodToday);
-      document.querySelector("#periodEndTodayButton").addEventListener("click", endPeriodToday);
+      document.querySelector("#periodStartTodayButton").addEventListener("click", () => runAsyncAction(startPeriodToday, "记录失败"));
+      document.querySelector("#periodEndTodayButton").addEventListener("click", () => runAsyncAction(endPeriodToday, "结束记录失败"));
       document.querySelector("#periodForm").addEventListener("submit", (event) => {
         event.preventDefault();
-        savePeriodFromForm();
+        runAsyncAction(savePeriodFromForm, "保存失败");
       });
       document.querySelector("#periodCancelEditButton").addEventListener("click", () => {
         state.editingPeriodId = null;
@@ -5232,7 +6278,7 @@
       });
       document.querySelector("#periodLogForm").addEventListener("submit", (event) => {
         event.preventDefault();
-        savePeriodDailyLog();
+        runAsyncAction(savePeriodDailyLog, "保存失败");
       });
       document.querySelector("#periodHistoryList").addEventListener("click", (event) => {
         const button = event.target.closest("[data-action]");
@@ -5243,8 +6289,141 @@
           editPeriodRecord(recordId);
         }
         if (button.dataset.action === "delete-period") {
-          deletePeriodRecord(recordId);
+          runAsyncAction(() => deletePeriodRecord(recordId), "删除失败");
         }
+      });
+    }
+
+    function setupCouple() {
+      document.querySelector("#coupleAuthForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const email = document.querySelector("#coupleEmailInput").value.trim();
+        const password = document.querySelector("#couplePasswordInput").value;
+        const nickname = document.querySelector("#coupleNicknameInput").value.trim();
+        if (!isSupabaseConfigured()) {
+          petReact("talk", "先去我的页面保存 Supabase 项目地址和 publishable key。");
+          return;
+        }
+        if (!email || !password) {
+          petReact("talk", "邮箱和密码都要填，账号不能靠意念登录。");
+          return;
+        }
+        try {
+          await signUpWithPassword(email, password, nickname);
+        } catch (error) {
+          petReact("talk", `注册没成功：${error.message}`, 5200);
+        }
+      });
+
+      document.querySelector("#coupleLoginButton").addEventListener("click", async () => {
+        const email = document.querySelector("#coupleEmailInput").value.trim();
+        const password = document.querySelector("#couplePasswordInput").value;
+        const nickname = document.querySelector("#coupleNicknameInput").value.trim();
+        if (!isSupabaseConfigured()) {
+          petReact("talk", "先去我的页面保存 Supabase 项目地址和 publishable key。");
+          return;
+        }
+        if (!email || !password) {
+          petReact("talk", "邮箱和密码都要填。噜噜不是读心术登录器。");
+          return;
+        }
+        try {
+          await signInWithPassword(email, password, nickname);
+        } catch (error) {
+          petReact("talk", `登录没成功：${error.message}`, 5200);
+        }
+      });
+
+      document.querySelector("#createCoupleButton").addEventListener("click", async () => {
+        try {
+          await createCoupleSpace();
+        } catch (error) {
+          petReact("talk", `创建失败：${error.message}`, 5200);
+        }
+      });
+
+      document.querySelector("#joinCoupleButton").addEventListener("click", async () => {
+        try {
+          await joinCoupleSpace();
+        } catch (error) {
+          petReact("talk", `加入失败：${error.message}`, 5200);
+        }
+      });
+
+      document.querySelector("#refreshCoupleButton").addEventListener("click", async () => {
+        await loadCoupleData();
+        petReact("talk", "情侣空间刷新了一下。");
+      });
+
+      document.querySelector("#importLocalToCoupleButton").addEventListener("click", () => {
+        importLocalToCouple();
+      });
+
+      document.querySelector("#sharedTodoForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const input = document.querySelector("#sharedTodoInput");
+        const text = input.value.trim();
+        const dueDate = document.querySelector("#sharedTodoDateInput").value || getISODate();
+        if (!text) {
+          petReact("talk", "共同待办也得写点东西。");
+          return;
+        }
+        await addSharedTodo(text, dueDate);
+        input.value = "";
+      });
+
+      document.querySelector("#sharedTodoList").addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-action]");
+        const todoId = event.target.closest("[data-shared-todo-id]")?.dataset.sharedTodoId;
+        if (!button || !todoId) return;
+        if (button.dataset.action === "toggle-shared-todo") await toggleSharedTodo(todoId);
+        if (button.dataset.action === "delete-shared-todo") await deleteSharedTodo(todoId);
+      });
+
+      document.querySelector("#couplePlanForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const titleInput = document.querySelector("#couplePlanTitleInput");
+        const title = titleInput.value.trim();
+        if (!title) {
+          petReact("talk", "计划清单不能只计划空气。");
+          return;
+        }
+        await addCouplePlan(
+          document.querySelector("#couplePlanCategory").value,
+          title,
+          document.querySelector("#couplePlanNoteInput").value.trim(),
+          document.querySelector("#couplePlanDateInput").value
+        );
+        titleInput.value = "";
+        document.querySelector("#couplePlanDateInput").value = "";
+        document.querySelector("#couplePlanNoteInput").value = "";
+      });
+
+      document.querySelector("#couplePlanList").addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-action]");
+        const planId = event.target.closest("[data-plan-id]")?.dataset.planId;
+        if (!button || !planId) return;
+        if (button.dataset.action === "toggle-plan") await toggleCouplePlan(planId);
+        if (button.dataset.action === "delete-plan") await deleteCouplePlan(planId);
+      });
+
+      document.querySelector("#coupleNoteForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const input = document.querySelector("#coupleNoteInput");
+        const body = input.value.trim();
+        if (!body) {
+          petReact("talk", "小纸条总得写点字。");
+          return;
+        }
+        await addCoupleNote(body);
+        input.value = "";
+      });
+
+      document.querySelector("#coupleNoteList").addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-action]");
+        const noteId = event.target.closest("[data-note-id]")?.dataset.noteId;
+        if (!button || !noteId) return;
+        if (button.dataset.action === "delete-note") await deleteCoupleNote(noteId);
       });
     }
 
@@ -5451,14 +6630,31 @@
       });
 
       document.querySelector("#syncSaveButton").addEventListener("click", () => {
-        saveSharedSyncSettingsFromForm();
+        const supabaseUrl = document.querySelector("#syncUrlInput").value.trim().replace(/\/+$/, "");
+        const anonKey = document.querySelector("#syncAnonKeyInput").value.trim();
+        const nickname = document.querySelector("#profileNicknameInput").value.trim().slice(0, 16);
+        state.syncSettings = normalizeSyncSettings({
+          ...state.syncSettings,
+          enabled: false,
+          supabaseUrl,
+          anonKey,
+          nickname
+        });
+        saveSyncSettingsLocal();
+        renderAll();
+        petReact("talk", "配置保存好了。现在可以去情侣空间登录。");
       });
 
       document.querySelector("#syncNowButton").addEventListener("click", () => {
-        syncSharedData(true);
+        if (state.couple) {
+          loadCoupleData();
+          petReact("talk", "情侣空间刷新中。");
+        } else {
+          petReact("talk", "还没有绑定情侣空间，刷新也只能刷新空气。");
+        }
       });
 
-      document.querySelector("#syncDisconnectButton").addEventListener("click", disconnectSharedSync);
+      document.querySelector("#authLogoutButton").addEventListener("click", signOutAccount);
 
       document.querySelector("#resetPetButton").addEventListener("click", () => {
         setPetPosition(getDefaultPetPosition());
@@ -5513,9 +6709,10 @@
       document.querySelector("#deskPet").classList.add("is-ready");
     }
 
-    function initApp() {
+    async function initApp() {
       loadState();
       applyTheme();
+      await restoreAuthSession();
       document.querySelector("#todayText").textContent = formatToday();
       preloadPetImages();
       initPetPosition();
@@ -5523,6 +6720,7 @@
       setupNavigation();
       setupTodo();
       setupHealth();
+      setupCouple();
       setupLedger();
       setupDecider();
       setupMine();
@@ -5532,6 +6730,9 @@
       renderAll();
       startAutoTalk();
       queueSharedSync(1400);
+      if (isLoggedIn()) {
+        startCouplePolling();
+      }
 
       if (wasAwayMoreThanThreeDays()) {
         setPetImage("sad");
